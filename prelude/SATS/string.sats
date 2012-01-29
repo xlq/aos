@@ -7,3 +7,7 @@ fun idx_string_int
   (s: string len, i: int i): c1har
   = "mac#atspre_idx_char"
 overload [] with idx_string_int
+
+fun string_length {len: Nat}
+  (s: string len): int len
+  = "strlen"

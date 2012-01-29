@@ -27,11 +27,17 @@ _start:
     pushl %eax /* magic */
     pushl %ebx /* mb_info */
 
+    call _2boot_2edats__staload
+    call _2boot_2edats__dynload
     call ats_entry_point
 
 hang:
     cli
     hlt
     jmp hang
+
+.global _2boot_2edats__dynload_flag
+_2boot_2edats__dynload_flag:
+    .int 0
 
 .comm stack, STACK_SIZE

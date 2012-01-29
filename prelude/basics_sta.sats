@@ -187,6 +187,8 @@ stadef null = null_addr
 (* ****** ****** *)
 
 abst@ype uint8 = $extype "uint8_t"
+abst@ype uint16 = $extype "uint16_t"
+abst@ype uint32 = $extype "uint32_t"
 
 
 (* ****** ****** *)
@@ -257,3 +259,19 @@ size_int_int_bool
   (sz:int, n:int) = n >= 0
 stacst sizeof_viewt0ype_int : viewt@ype -> int
 stadef sizeof = sizeof_viewt0ype_int
+
+(**********  Views/helpful types/etc.  **********)
+
+prfun static_assert {b: bool | b == true} (): void // = ()
+
+dataview choice_v (b:bool, true_v:view+, false_v:view+) =
+  | True_v (true, true_v, false_v) of true_v
+  | False_v (false, true_v, false_v) of false_v
+
+dataview option_v (v:view+, b:bool) =
+  | Some_v (v, true) of v
+  | None_v (v, false)
+
+dataviewtype option_vt (v:viewt@ype+, b:bool) =
+  | Some_vt (v, true) of v
+  | None_vt (v, false)

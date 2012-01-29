@@ -1,36 +1,29 @@
 (* PC serial port output. *)
 
-staload "integers.sats"
+staload "prelude/limits.sats"
 
-typedef _serial_port =
+abst@ype serial_port = 
   @{
-    initialised = bool,
     port = uint16,
     irq = int
   }
 
-abst@ype serial_port (initialised: bool) = _serial_port
-
-val new: serial_port false
-
 fun init
+  {l: agz}
   {com_number: int | com_number >= 1 && com_number <= 4}
-  (port: &serial_port false >> serial_port success,
+  (pf_port: serial_port? @ l |
+   port: ptr l,
    com_number: int com_number,
-   baud: int):
-  #[success: bool]
-  bool success
-
-fun is_initialised
-  {initialised: bool}
-  (port: &serial_port initialised): bool initialised
+   baud: uint):
+  [success: bool] (choice_v (success, serial_port @ l, serial_port? @ l)
+    | bool success)
 
 fun send_char
-  (port: &serial_port true,
+  (port: &serial_port,
    ch: char): void
 
 fun send_string
-  {len: nat}
-  (port: &serial_port true,
-   len: size_t len,
+  {len: Int}
+  (port: &serial_port,
+   len: int len,
    str: string len): void
