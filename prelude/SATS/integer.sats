@@ -34,22 +34,22 @@ overload >= with ge_int_int
 (**********  SIGNED, INDEXED  **********)
 
 fun eq_int1_int1
-  {a, b: Int} (a: int a, b: int b):<>
+  {a, b: int} (a: int a, b: int b):<>
   bool (a == b) = "mac#atspre_eq"
 fun ne_int1_int1
-  {a, b: Int} (a: int a, b: int b):<>
+  {a, b: int} (a: int a, b: int b):<>
   bool (a <> b) = "mac#atspre_ne"
 fun lt_int1_int1
-  {a, b: Int} (a: int a, b: int b):<>
+  {a, b: int} (a: int a, b: int b):<>
   bool (a < b) = "mac#atspre_lt"
 fun gt_int1_int1
-  {a, b: Int} (a: int a, b: int b):<>
+  {a, b: int} (a: int a, b: int b):<>
   bool (a > b) = "mac#atspre_gt"
 fun le_int1_int1
-  {a, b: Int} (a: int a, b: int b):<>
+  {a, b: int} (a: int a, b: int b):<>
   bool (a <= b) = "mac#atspre_le"
 fun ge_int1_int1
-  {a, b: Int} (a: int a, b: int b):<>
+  {a, b: int} (a: int a, b: int b):<>
   bool (a >= b) = "mac#atspre_ge"
 overload = with eq_int1_int1
 overload != with ne_int1_int1
@@ -59,31 +59,31 @@ overload <= with le_int1_int1
 overload >= with ge_int1_int1
 
 fun add_int1_int1
-  {a, b: Int | a + b >= INT_MIN && a + b <= INT_MAX}
+  {a, b: int | a + b >= INT_MIN && a + b <= INT_MAX}
   (a: int a, b: int b):<> int (a + b)
   = "mac#atspre_add"
 overload + with add_int1_int1
 
 fun sub_int1_int1
-  {a, b: Int | a - b >= INT_MIN && a - b <= INT_MAX}
+  {a, b: int | a - b >= INT_MIN && a - b <= INT_MAX}
   (a: int a, b: int b):<> int (a - b)
   = "mac#atspre_sub"
 overload - with sub_int1_int1
 
 fun premul_int1_int1
-  {a, b: Int} (a: int a, b: int b):<>
+  {a, b: int} (a: int a, b: int b):<>
   bool (a * b >= INT_MIN && a * b <= INT_MAX)
   = "atspre_premul_int1_int1"
 overload *? with premul_int1_int1
 
 fun mul_int1_int1
-  {a, b: Int | a * b >= INT_MIN && a * b <= INT_MAX}
+  {a, b: int | a * b >= INT_MIN && a * b <= INT_MAX}
   (a: int a, b: int b):<> int (a * b)
   = "mac#atspre_mul"
 overload * with mul_int1_int1
 
 fun imul2
-  {a, b: Int | a * b >= INT_MIN && a * b <= INT_MAX}
+  {a, b: int | a * b >= INT_MIN && a * b <= INT_MAX}
   (a: int a, b: int b):<> [r: Int] (MUL(a,b,r) | int r)
   = "mac#atspre_mul"
 
@@ -109,22 +109,22 @@ overload lor with lor_uint_uint
 (**********  UNSIGNED, INDEXED  **********)
 
 fun eq_uint1_uint1
-  {a, b: Uint} (a: uint a, b: uint b):<>
+  {a, b: int} (a: uint a, b: uint b):<>
   bool (a == b) = "mac#atspre_eq"
 fun ne_uint1_uint1
-  {a, b: Uint} (a: uint a, b: uint b):<>
+  {a, b: int} (a: uint a, b: uint b):<>
   bool (a <> b) = "mac#atspre_ne"
 fun lt_uint1_uint1
-  {a, b: Uint} (a: uint a, b: uint b):<>
+  {a, b: int} (a: uint a, b: uint b):<>
   bool (a < b) = "mac#atspre_lt"
 fun gt_uint1_uint1
-  {a, b: Uint} (a: uint a, b: uint b):<>
+  {a, b: int} (a: uint a, b: uint b):<>
   bool (a > b) = "mac#atspre_gt"
 fun le_uint1_uint1
-  {a, b: Uint} (a: uint a, b: uint b):<>
+  {a, b: int} (a: uint a, b: uint b):<>
   bool (a <= b) = "mac#atspre_le"
 fun ge_uint1_uint1
-  {a, b: Uint} (a: uint a, b: uint b):<>
+  {a, b: int} (a: uint a, b: uint b):<>
   bool (a >= b) = "mac#atspre_ge"
 overload = with eq_uint1_uint1
 overload != with ne_uint1_uint1
@@ -134,40 +134,40 @@ overload <= with le_uint1_uint1
 overload >= with ge_uint1_uint1
 
 fun add_uint1_uint1
-  {a, b: Uint | a + b <= UINT_MAX}
+  {a, b: int | a + b <= UINT_MAX}
   (a: uint a, b: uint b):<> uint (a+b)
   = "mac#atspre_add"
 overload + with add_uint1_uint1
 
 fun sub_uint1_uint1
-  {a, b: Uint | a >= b}
+  {a, b: int | a >= b}
   (a: uint a, b: uint b):<> uint (a-b)
   = "mac#atspre_sub"
 overload - with sub_uint1_uint1
 
 fun land_uint1_uint1
-  {a, b: Uint}
+  {a, b: int}
   (a: uint a, b: uint b):<>
   [r: Uint | r <= a && r <= b] uint r
   = "mac#atspre_land"
 overload land with land_uint1_uint1
 
 fun lor_uint1_uint1
-  {a, b: Uint}
+  {a, b: int}
   (a: uint a, b: uint b):<>
   [r: Uint | r >= a && r >= b && r <= a + b] uint r
   = "mac#atspre_lor"
 overload lor with lor_uint1_uint1
 
 fun div_uint1_uint1
-  {a, b: Uint | b > 0}
+  {a, b: int | b > 0}
   (a: uint a, b: uint b):<>
   [q: Uint | q <= a] uint q
   = "mac#atspre_div"
 overload / with div_uint1_uint1
 
 fun mod_uint1_uint1
-  {a, b: Uint | b > 0}
+  {a, b: int | b > 0}
   (a: uint a, b: uint b):<>
   [r: Uint | r < b] uint r
   = "mac#atspre_mod"
@@ -175,13 +175,13 @@ overload mod with mod_uint1_uint1
 
 infixl ( / ) udiv2
 fun udiv2
-  {a, b: Uint | b > 0}
+  {a, b: int | b > 0}
   (a: uint a, b: uint b):<>
   [q, r: Uint | q <= a && r < b] (DIVMOD (a, b, q, r) | uint q)
   = "mac#atspre_div"
 
 fun umod2
-  {a, b: Uint | b > 0}
+  {a, b: int | b > 0}
   (a: uint a, b: uint b):<>
   [q, r: Uint | r < b] (DIVMOD (a, b, q, r) | uint r)
   = "mac#atspre_mod"
@@ -191,28 +191,28 @@ propdef needbits (x: int, nbits: int) =
   [nexp: nat | x < nexp] [x >= 0] [nbits >= 0] EXP2 (nbits, nexp)
 
 fun ushl
-  {x: Uint} {xbits: int} {n: Int | n <= UINT_BIT-xbits}
+  {x: int} {xbits: int} {n: Int | n <= UINT_BIT-xbits}
   (pf: needbits(x,xbits) |
    x: uint x, n: int n):<>
   [r:Uint] uint r
    = "mac#atspre_shl"
 
 fun ushl2
-  {x: Uint} {xbits: int} {n: Nat | n <= UINT_BIT-xbits}
+  {x: int} {xbits: int} {n: Nat | n <= UINT_BIT-xbits}
   (pf: needbits(x,xbits) |
    x: uint x, n: int n):<>
   [r:Uint] (needbits(r,xbits+n) | uint r)
    = "mac#atspre_shl"
 
 fun shr_uint1_int1
-  {x: Uint} {n: Nat}
+  {x: int} {n: nat}
   (x: uint x, n: int n):<>
   [r:Uint] uint r
   = "mac#atspre_shr"
 overload >> with shr_uint1_int1
 
 fun ushr2
-  {x: Uint} {xbits: int} {n: Int | n <= xbits}
+  {x: int} {xbits: int} {n: int | n <= xbits}
   (pf: needbits(x,xbits) |
    x: uint x, n: int n):<>
   [r:Uint] (needbits(r,xbits-n) | uint r)
