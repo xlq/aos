@@ -14,3 +14,14 @@ infixl ( * ) *?
 
 val true: bool true = "mac#true"
 val false: bool false = "mac#false"
+
+(* "opt" is a box for storing a possibly initialised viewtype. *)
+praxi opt_some {vt:viewt@ype} (x: !vt >> opt(vt,true)):<> void
+praxi opt_none {vt:viewt@ype} (x: !vt? >> opt(vt,false)):<> void
+praxi opt_unsome {vt:viewt@ype} (x: !opt(vt,true) >> vt):<> void
+praxi opt_unnone {vt:viewt@ype} (x: !opt(vt,false) >> vt?):<> void
+
+fun vbox_make_view_ptr
+  {vt:viewt@ype} {l:addr}
+  (pf: vt @ l | p: ptr l): (vbox (vt @ l) | void)
+  = "atspre_vbox_make_view_ptr"

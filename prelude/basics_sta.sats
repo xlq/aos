@@ -72,6 +72,7 @@ abstype cloref_t0ype_type (t@ype)
 absviewt@ype crypt_viewt0ype_viewt0ype (a: viewt@ype) = a
 
 absview at_viewt0ype_addr_view (viewt@ype+, addr)
+absprop vbox_view_prop (view)
 
 stacst true_bool : bool and false_bool : bool
 stacst neg_bool_bool : bool -> bool (* boolean negation *)
@@ -137,9 +138,11 @@ stadef ulint = ulint_int_t0ype
 stadef size_t = size_int_t0ype
 stadef ssize_t = ssize_int_t0ype
 stadef ptr = ptr_addr_type
+stadef string = string_type
 stadef string = string_int_type
 
 stadef @ = at_viewt0ype_addr_view
+stadef vbox = vbox_view_prop
 
 stadef true = true_bool and false = false_bool
 stadef ~ = neg_bool_bool
@@ -261,6 +264,8 @@ stacst sizeof_viewt0ype_int : viewt@ype -> int
 stadef sizeof = sizeof_viewt0ype_int
 
 (**********  Views/helpful types/etc.  **********)
+
+absviewt@ype opt (vt:viewt@ype+, opt:bool) = vt
 
 prfun static_assert {b: bool | b == true} (): void // = ()
 

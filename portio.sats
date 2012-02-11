@@ -38,9 +38,9 @@
   }
 %}
 
-fun inb (port: uint16): uint8 = "mac#inb"
-fun inw (port: uint16): uint16 = "mac#inw"
-fun inl (port: uint16): uint32 = "mac#inl"
-fun outb (port: uint16, value: uint8): void = "mac#outb"
-fun outw (port: uint16, value: uint16): void = "mac#outb"
-fun outl (port: uint16, value: uint32): void = "mac#outb"
+fun inb (port: uint16):<> uint8 = "mac#inb"
+fun inw (port: uint16):<> uint16 = "mac#inw"
+fun inl (port: uint16):<> uint32 = "mac#inl"
+fun outb (port: uint16, value: uint8):<> void = "mac#outb"
+fun outw (port: uint16, value: uint16):<> void = "mac#outb"
+fun outl (port: uint16, value: uint32):<> void = "mac#outb"

@@ -1,10 +1,13 @@
 staload VGA = "vga-text.sats"
+staload Trace = "trace.sats"
 dynload "vga-text.dats"
 dynload "serial.dats"
 dynload "trace.dats"
+dynload "enablable.dats"
 
 extern fun ats_entry_point (): void = "ats_entry_point"
 implement ats_entry_point () =
+(*
 let
   var con: $VGA.console?
   val (pfcon | success) = $VGA.init_B8000 (view@ con | &con)
@@ -25,6 +28,13 @@ in
       view@ con := pfcon
     end
 end
+*)
+
+begin
+  $Trace.init_serial (1, 115200u);
+  $Trace.traceloc ("Hello, world!\n")
+end
+  
 
 (*
   init_B8000 (view@ con | &con)

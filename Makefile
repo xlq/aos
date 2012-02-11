@@ -8,6 +8,7 @@ V ?= 0 # Verbosity
 
 SOURCES = prelude/limits.sats portio.sats \
           boot.dats vga-text.sats vga-text.dats \
+          enablable.sats enablable.dats \
           serial.sats serial.dats trace.sats trace.dats
 
 ifeq ($(strip $(V)),0)
@@ -53,17 +54,18 @@ $(sats_objects) $(dats_objects): %.o: %.c | $(sats_objects:.o=.c) $(dats_objects
 
 $(dats_objects:.o=.c): %_dats.c: %.dats
 	$(ECHO) $(ATSSTR)
-	$(ATSOPT) --gline --output $@ --dynamic $<
+	$(ATSOPT) --gline --output $@ --dynamic $< || { $(RM) $@ ; false ; }
 
 $(sats_objects:.o=.c): %_sats.c: %.sats
 	$(ECHO) $(ATSSTR)
-	$(ATSOPT) --gline --output $@ --static $<
+	$(ATSOPT) --gline --output $@ --static $< || { $(RM) $@ ; false ; }
 
 .PHONY: depend
 
 depend:
 	$(ECHO) "    Analysing dependencies..."
-	$(ATSOPT) -dep1 -s $(sats_sources) -d $(dats_sources) > .depends.mak
+	$(ATSOPT) -dep1 -s $(sats_sources) -d $(dats_sources) \
+		| sed -r 's/^ *([^:]*)\.o *:/\1.c :/' > .depends.mak
 
 .PHONY: clean
 

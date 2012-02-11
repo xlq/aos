@@ -23,7 +23,7 @@ stadef INT_MIN = ~0x80000000
 sortdef Int = {a: int | a >= INT_MIN && a <= INT_MAX}
 sortdef Nat = {a: Int | a >= 0}
 sortdef Pos = {a: Int | a > 0}
-sortdef Uint = {a: int | a >= UINT_MIN && a <= UINT_MAX}
+sortdef Uint = {a: nat | a >= UINT_MIN && a <= UINT_MAX}
 sortdef Uint8 = {a: int | a >= UINT8_MIN && a <= UINT8_MAX}
 sortdef Uint16 = {a: int | a >= UINT16_MIN && a <= UINT16_MAX}
 sortdef Uint32 = {a: int | a >= UINT32_MIN && a <= UINT32_MAX}

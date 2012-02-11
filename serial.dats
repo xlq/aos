@@ -17,7 +17,7 @@ val COM3_BASE = 0x3E8u
 val COM4_BASE = 0x2E8u
 
 (* Is a UART present? *)
-fn detect_uart (port: &serial_port): bool =
+fn detect_uart (port: &serial_port):<> bool =
   let
     val tmp = inb (uint16_of (port.port + 4u))
   in
@@ -36,48 +36,40 @@ fn detect_uart (port: &serial_port): bool =
     end
   end
 
-implement init {l} (pf_port | port, com_number, baud) =
-begin
-  (* Select port base and IRQ number. *)
-  (*case+ com_number of
-    | 1 => init2 (pf_port | port, baud, COM1_BASE, COM1_IRQ)
-    | 2 => init2 (pf_port | port, baud, COM2_BASE, COM2_IRQ)
-    | 3 => init2 (pf_port | port, baud, COM3_BASE, COM1_IRQ)
-    | 4 => init2 (pf_port | port, baud, COM4_BASE, COM2_IRQ)*)
-  init2 (pf_port | port, baud, COM1_BASE, COM1_IRQ)
-end where {
-  fun init2
-    (pf_port: serial_port? @ l |
-     port: ptr l,
-     baud: uint,
-     portn: port_t,
-     irq: int):
-    [success: bool] (choice_v (success, serial_port @ l, serial_port? @ l)
-      | bool success)
-  = begin
-    !port := @{ port = portn, irq = irq };
-    if not (detect_uart !port) then (False_v pf_port | false)
-    else let
-      val divisor = 115200u / uint1_of baud
-    in
-      if divisor > uint1_of UINT16_MAX then (False_v pf_port | false)
+implement init (port, com_number, baud) =
+let
+  val (portnum, irq) = case+ com_number of
+    | 1 => (COM1_BASE, COM1_IRQ)
+    | 2 => (COM2_BASE, COM2_IRQ)
+    | 3 => (COM3_BASE, COM1_IRQ)
+    | 4 => (COM4_BASE, COM2_IRQ)
+in
+  port := @{ port = portnum, irq = irq };
+  if not (detect_uart port) then
+    (* No UART is present. *)
+    let prval () = opt_none {serial_port} port in false; end
+  else
+    let val divisor = 115200u / baud in
+      if divisor > uint1_of UINT16_MAX then
+        (* Baud rate is too low! *)
+        let prval () = opt_none {serial_port} port in false; end
       else begin
-        outb (uint16_of (port->port + 1u), uint8_of 0x00u); // disable all interrupts
-        outb (uint16_of (port->port + 3u), uint8_of 0x80u); // enable 'DLAB' - baud rate divisor
-        outb (uint16_of (port->port + 0u), uint8_of (divisor land 0xFFu)); // divisor (lower)
-        outb (uint16_of (port->port + 1u), uint8_of (0xFFu land (divisor >> 8))); // divisor (upper)
-        outb (uint16_of (port->port + 3u), uint8_of 0x03u); // 8 bits, no parity, one stop bit
-        outb (uint16_of (port->port + 2u), uint8_of 0xC7u); // enable FIFO, clear them, with 14 byte threshold
-        outb (uint16_of (port->port + 4u), uint8_of 0x0Bu); // enable something?
-        outb (uint16_of (port->port + 4u), inb (uint16_of (port->port + 4u)) lor uint8_of 8u); // set OUT2 bit to enable interrupts
-        outb (uint16_of (port->port + 1u), uint8_of 0x01u); // enable ERBFI (receiver buffer full interrupt)
-        (True_v pf_port | true)
+        outb (uint16_of (port.port + 1u), uint8_of 0x00u); // disable all interrupts
+        outb (uint16_of (port.port + 3u), uint8_of 0x80u); // enable 'DLAB' - baud rate divisor
+        outb (uint16_of (port.port + 0u), uint8_of (divisor land 0xFFu)); // divisor (lower)
+        outb (uint16_of (port.port + 1u), uint8_of (0xFFu land (divisor >> 8))); // divisor (upper)
+        outb (uint16_of (port.port + 3u), uint8_of 0x03u); // 8 bits, no parity, one stop bit
+        outb (uint16_of (port.port + 2u), uint8_of 0xC7u); // enable FIFO, clear them, with 14 byte threshold
+        outb (uint16_of (port.port + 4u), uint8_of 0x0Bu); // enable something?
+        outb (uint16_of (port.port + 4u), inb (uint16_of (port.port + 4u)) lor uint8_of 8u); // set OUT2 bit to enable interrupts
+        outb (uint16_of (port.port + 1u), uint8_of 0x01u); // enable ERBFI (receiver buffer full interrupt)
+        (* Success. *)
+        let prval () = opt_some {serial_port} port in true; end
       end
     end
-  end
-}
+end
 
-fn sanitise_output (port: &serial_port, ch: char): char =
+fn sanitise_output (port: &serial_port, ch: char):<!ntm> char =
   case+ ch of
     | '\n' => (send_char (port, '\r'); '\n') (* LF -> CRLF *)
     | '\b' => '\0'
@@ -93,18 +85,10 @@ implement send_char (port, ch) =
     outb (uint16_of port.port, uint8_of (ch')) (* send! *)
   end
 
-implement send_string (port, len, str) = let
-  fun loop {i, len: nat | i <= len} .<len-i>.
-    (port: &serial_port,
-     len: int len,
-     i: int i,
-     str: string len
-    ): void
-  =
-    if i < len then begin
-      send_char (port, str[i]);
-      loop (port, len, i+1, str)
-    end
+implement send_string (port, len, str) =
+let
+  var i: [i: nat] int i
 in
-  loop (port, len, 0, str)
+  for (i := 0; i < len; i := i + 1)
+    send_char (port, str[i])
 end
