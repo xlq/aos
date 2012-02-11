@@ -142,20 +142,13 @@ end
    Move count elements from "from" to "to". *)
 fn {t: t@ype} move_elements
   {len: Nat} {from, to, count: nat | from + count <= len && to + count <= len && to <= from}
-  (arr: &(@[t][len]), from: int from, to: int to, count: int count): void
-= loop (arr, from, to, count, 0) where {
-  fun loop {i: nat | i <= count} .<count-i>.
-    (arr: &(@[t][len]),
-     from: int from,
-     to: int to,
-     count: int count,
-     i: int i): void
-  =
-    if i < count then begin
-      arr.[to+i] := arr.[from+i];
-      loop (arr, from, to, count, i+1)
-    end
-}
+  (arr: &(@[t][len]), from: int from, to: int to, count: int count): void =
+let
+  var i: [i: nat] int i
+in
+  for (i := 0; i < count; i := i + 1)
+    arr.[to + i] := arr.[from + i]
+end
 
 fun {t: t@ype} set_elements
   {len: Nat} {start, count: nat | start + count <= len} .<count>.
@@ -221,19 +214,16 @@ begin
   set_hw_cursor con
 end
 
-implement put_string {len} (con, len, str)
-= loop (con, len, str, 0) where {
-  fun loop {i: Nat | i <= len} .<len-i>.
-    (self: &console, len: int len,
-     str: string len, i: int i): void
-  =
-    if i < len then begin
-      put_char_inner (self, str[i]);
-      loop (self, len, str, i+1)
-    end else begin
-      set_hw_cursor self
-    end
-}
+implement put_string {len} (con, len, str) =
+let
+  var i: [i: nat] int i
+in
+  begin
+    for (i := 0; i < len; i := i + 1)
+      put_char_inner (con, str[i])
+  end;
+  set_hw_cursor con
+end
 
 implement init_B8000 (pf_con | con) =
 let
