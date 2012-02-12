@@ -1,9 +1,11 @@
 staload VGA = "vga-text.sats"
 staload Trace = "trace.sats"
+staload GDT = "gdt.sats"
 dynload "vga-text.dats"
 dynload "serial.dats"
 dynload "trace.dats"
 dynload "enablable.dats"
+dynload "gdt.dats"
 
 extern fun ats_entry_point (): void = "ats_entry_point"
 implement ats_entry_point () =
@@ -33,5 +35,6 @@ end
 begin
   $Trace.init_serial (1, 115200u);
   $Trace.init_vga ();
-  $Trace.traceloc ("Hello, world!\n")
+  $Trace.traceloc ("Hello, world!\n");
+  $GDT.init ();
 end

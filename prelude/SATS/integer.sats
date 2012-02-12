@@ -9,6 +9,7 @@ castfn int_of_int1 {x: Int} (x: int x):<> int
 castfn uint1_of_uint (x: uint):<> [x':Uint] uint x'
 castfn uint_of_uint1 {x: Uint} (x: uint x):<> uint
 
+
 overload int1_of with int1_of_uint1
 overload uint1_of with uint1_of_int1
 overload int1_of with int1_of_int

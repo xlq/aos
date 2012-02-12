@@ -15,6 +15,8 @@ infixl ( * ) *?
 val true: bool true = "mac#true"
 val false: bool false = "mac#false"
 
+val {T: viewt@ype} sizeof: size_t (sizeof T)
+
 (* "opt" is a box for storing a possibly initialised viewtype. *)
 praxi opt_some {vt:viewt@ype} (x: !vt >> opt(vt,true)):<> void
 praxi opt_none {vt:viewt@ype} (x: !vt? >> opt(vt,false)):<> void

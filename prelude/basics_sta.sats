@@ -47,6 +47,8 @@ abst@ype int_long_t0ype = $extype "long"
 abst@ype uint_long_t0ype = $extype "ulong"
 abst@ype size_t0ype = $extype "size_t"
 abst@ype ssize_t0ype = $extype "ssize_t"
+abst@ype intptr_t0ype = $extype "intptr_t"
+abst@ype uintptr_t0ype = $extype "uintptr_t"
 abstype ptr_type = $extype "ptr"
 
 abst@ype bool_bool_t0ype (bool) = bool_t0ype
@@ -57,9 +59,9 @@ abst@ype lint_int_t0ype (int) = int_long_t0ype
 abst@ype ulint_int_t0ype (int) = uint_long_t0ype
 abst@ype size_int_t0ype (int) = size_t0ype
 abst@ype ssize_int_t0ype (int) = ssize_t0ype
+abst@ype intptr_int_t0ype (int) = intptr_t0ype
+abst@ype uintptr_int_t0ype (int) = uintptr_t0ype
 abst@ype ptr_addr_type (addr) = ptr_type
-
-stacst sizeof_viewt0ype_int : viewt@ype -> int
 
 abstype string_type
 abstype string_int_type (int)
@@ -128,6 +130,8 @@ stadef long = int_long_t0ype
 stadef ulong = uint_long_t0ype
 stadef size_t = size_t0ype
 stadef ssize_t = ssize_t0ype
+stadef intptr_t = intptr_t0ype
+stadef uintptr_t = uintptr_t0ype
 stadef ptr = ptr_type
 stadef bool = bool_bool_t0ype
 stadef char = char_char_t0ype
@@ -137,6 +141,7 @@ stadef lint = lint_int_t0ype
 stadef ulint = ulint_int_t0ype
 stadef size_t = size_int_t0ype
 stadef ssize_t = ssize_int_t0ype
+stadef uintptr_t = uintptr_int_t0ype
 stadef ptr = ptr_addr_type
 stadef string = string_type
 stadef string = string_int_type
@@ -280,3 +285,5 @@ dataview option_v (v:view+, b:bool) =
 dataviewtype option_vt (v:viewt@ype+, b:bool) =
   | Some_vt (v, true) of v
   | None_vt (v, false)
+
+prfun check {b: bool | b == true} (): void (* = () *)

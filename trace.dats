@@ -55,3 +55,27 @@ begin
       in () end
   end
 end
+
+implement panic_loc_msg {loc_len, msg_len} (loc, msg) =
+begin
+  let prval vbox pfcom1 = pfcom1 in
+    if com1.enabled then
+      let
+        prval () = opt_unsome com1.obj
+        val () = send_string (com1.obj, string_length loc, loc)
+        val () = send_string (com1.obj, 23, ":\n*** KERNEL PANIC ***\n")
+        val () = send_string (com1.obj, string_length msg, msg)
+        prval () = opt_some com1.obj
+      in () end
+  end;
+  let prval vbox pfcon = pfcon in
+    if con.enabled then
+      let
+        prval () = opt_unsome con.obj
+        val () = put_string (con.obj, 21, "*** KERNEL PANIC ***\n")
+        val () = put_string (con.obj, string_length msg, msg)
+        prval () = opt_some con.obj
+      in () end
+  end;
+  halt_completely ()
+end

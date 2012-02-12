@@ -9,7 +9,8 @@ V ?= 0 # Verbosity
 SOURCES = prelude/limits.sats portio.sats \
           boot.dats vga-text.sats vga-text.dats \
           enablable.sats enablable.dats \
-          serial.sats serial.dats trace.sats trace.dats
+          serial.sats serial.dats trace.sats trace.dats \
+          gdt.sats gdt.dats
 
 ifeq ($(strip $(V)),0)
 .SILENT:
