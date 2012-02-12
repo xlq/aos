@@ -1,13 +1,13 @@
 staload "prelude/limits.sats"
 
 castfn uint8_of_uint {a: Uint8} (a: uint a):<> uint8
-castfn uint_of_uint8 (a: uint8): [r: Uint8] uint r
+castfn uint_of_uint8 (a: uint8):<> [r: Uint8] uint r
 
 castfn uint16_of_uint {a: Uint16} (a: uint a):<> uint16
-castfn uint_of_uint16 (a: uint16): [r: Uint16] uint r
+castfn uint_of_uint16 (a: uint16):<> [r: Uint16] uint r
 
 castfn uint32_of_uint {a: Uint32} (a: uint a):<> uint32
-castfn uint_of_uint32 (a: uint32): [r: Uint32] uint r
+castfn uint_of_uint32 (a: uint32):<> [r: Uint32] uint r
 
 overload uint8_of with uint8_of_uint
 overload uint16_of with uint16_of_uint

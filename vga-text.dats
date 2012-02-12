@@ -55,7 +55,7 @@ viewtypedef tmat = [width, height: Pos] tmat1 (width, height)
 
 assume console = tmat
 
-extern fun get_vram ():
+extern fun get_vram ():<>
   [l: agz] (vram l, @[cell][80*25] @ l | ptr l)
   = "mac#get_vram"
 
@@ -100,7 +100,7 @@ end
 
 (* Get position of the hardware cursor. *)
 fn get_hw_cursor {w,h:Pos}
-  (self: &tmat1(w,h)): void =
+  (self: &tmat1(w,h)):<> void =
 let
   val () = outb (uint16_of 0x3D4u, uint8_of 14u)
   val pos_hi = inb (uint16_of 0x3D5u)
@@ -120,7 +120,7 @@ end
 
 (* Set position of the hardware cursor. *)
 fn set_hw_cursor {w,h:Pos} {x,y:Nat | x < w && y < h}
-  (self: &tmat2(w,h,x,y)): void =
+  (self: &tmat2(w,h,x,y)):<> void =
 let
   prval () = mul_lt {w,h,x,y} ()
   val tmp = uint1_of (self.y * self.width + self.x)
@@ -142,17 +142,18 @@ end
    Move count elements from "from" to "to". *)
 fn {t: t@ype} move_elements
   {len: Nat} {from, to, count: nat | from + count <= len && to + count <= len && to <= from}
-  (arr: &(@[t][len]), from: int from, to: int to, count: int count): void =
+  (arr: &(@[t][len]), from: int from, to: int to, count: int count):<> void =
 let
-  var i: [i: nat] int i
+  var i: Int
 in
-  for (i := 0; i < count; i := i + 1)
+  for* {i:nat | i <= count} .<count-i>. (i: int i)
+  => (i := 0; i < count; i := i + 1)
     arr.[to + i] := arr.[from + i]
 end
 
 fun {t: t@ype} set_elements
   {len: Nat} {start, count: nat | start + count <= len} .<count>.
-  (arr: &(@[t][len]), start: int start, count: int count, elem: t): void
+  (arr: &(@[t][len]), start: int start, count: int count, elem: t):<> void
 =
   if count > 0 then begin
     arr.[start] := elem;
@@ -162,7 +163,7 @@ fun {t: t@ype} set_elements
 fn put_char_at
   {width, height, x0, y0: Nat | x0 < width && y0 < height}
   {x, y: Nat | x < width && y < height}
-  (mat: &tmat2(width, height, x0, y0), x: int x, y: int y, ch: char): void
+  (mat: &tmat2(width, height, x0, y0), x: int x, y: int y, ch: char):<> void
 =
   let
     prval () = mul_lt {width, height, x, y} ()
@@ -173,7 +174,7 @@ fn put_char_at
   end
 
 fn scroll {w,h: Pos} {x,y: Nat}
-  (self: &tmat2(w,h,x,y)): void =
+  (self: &tmat2(w,h,x,y)):<> void =
 let
   prval () = mul_pos_pos_pos (mul_make {h,w} ())
   prval () = mul_isfun (mul_add_const {~1} (mul_make {h,w} ()),
@@ -188,7 +189,7 @@ in
   self.pf_vram := pf_vram
 end
 
-fn newline (self: &console): void =
+fn newline (self: &console):<> void =
 begin
   self.x := 0;
   if self.y < self.height - 1 then
@@ -197,7 +198,7 @@ begin
     scroll self
 end
 
-fn put_char_inner (self: &console, ch: c1har): void =
+fn put_char_inner (self: &console, ch: c1har):<> void =
 begin
   if ch = '\n' then newline self
   else begin
@@ -216,28 +217,29 @@ end
 
 implement put_string {len} (con, len, str) =
 let
-  var i: [i: nat] int i
+  var i: Int
 in
   begin
-    for (i := 0; i < len; i := i + 1)
+    for* {i: nat | i <= len} .<len - i>. (i: int i)
+    => (i := 0; i < len; i := i + 1)
       put_char_inner (con, str[i])
   end;
   set_hw_cursor con
 end
 
-implement init_B8000 (pf_con | con) =
+implement init_B8000 (con) =
 let
   val (fr_vram, pf_vram | vram) = get_vram ()
 in
-  !con := @{
+  con := @{
     width = 80, height = 25,
     x = 0, y = 0,
     attrib = uint8_of 7u,
     fr_vram = fr_vram, pf_vram = pf_vram,
     vram = vram
   };
-  get_hw_cursor !con;
-  (True_v pf_con | true)
+  get_hw_cursor con;
+  let prval () = opt_some con in true; end
 end
 
 implement finit (con) =

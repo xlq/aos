@@ -21,23 +21,21 @@ val bright_yellow: colour
 val bright_white: colour
 
 (* Initialise a text console for VRAM at 0xB8000. *)
-fun init_B8000 {l:agz}
-  (pf_con: console? @ l |
-   con: ptr l): [success:bool]
-  (choice_v (success, console @ l, console? @ l) |
-   bool success)
+fun init_B8000
+  (con: &console? >> opt (console, success)):<> #[success: bool]
+  bool success
 
-fun finit (con: &console >> console?): void
+fun finit (con: &console >> console?):<> void
 
-fun default_colours (con: &console): void
-fun set_colour (con: &console, fg: colour): void
-fun set_background (con: &console, bg: colour): void
+fun default_colours (con: &console):<> void
+fun set_colour (con: &console, fg: colour):<> void
+fun set_background (con: &console, bg: colour):<> void
 
 symintr put
 
-fun put_char (con: &console, ch: c1har): void
+fun put_char (con: &console, ch: c1har):<> void
 overload put with put_char
 
 fun put_string {len:Nat}
-  (con: &console, len: int len, str: string len): void
+  (con: &console, len: int len, str: string len):<> void
 overload put with put_string

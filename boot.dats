@@ -32,40 +32,6 @@ end
 
 begin
   $Trace.init_serial (1, 115200u);
+  $Trace.init_vga ();
   $Trace.traceloc ("Hello, world!\n")
 end
-  
-
-(*
-  init_B8000 (view@ con | &con)
-
-
-  val (fr_vram, pf_vram | vram) = get_vram ()
-  var tty1: tmat = @{
-    width = 80, height = 25,
-    x = 0, y = 0,
-    fr_vram = fr_vram, pf_vram = pf_vram,
-    vram = vram
-  }
-in
-  get_hw_cursor tty1;
-  loop (tty1, 10) where {
-    fun loop {w,h: Pos} {i: Nat} .<i>.
-      (tty: &tmat1(w,h), i: int i): void =
-    begin
-      put_string (tty, 14, "Hello, world!\n");
-      put_string (tty, 14, "AOentaohetnh!\n");
-      put_string (tty, 14, "tnehaonethnh!\n");
-      put_string (tty, 14, "Cbaogeohetnh!\n");
-      put_string (tty, 14, "CGdc.gdeounh!\n");
-      put_string (tty, 14, "Bmbwboetbunh!\n");
-      put_string (tty, 14, ">PRgc,.bbeuh!\n");
-      put_string (tty, 14, "EGOBJ ohetnh!\n");
-      put_string (tty, 14, "!!!!!!!hetnh!\n");
-      put_string (tty, 14, "???????hetnh!\n");
-      if i > 0 then loop (tty, i-1)
-    end
-  };
-  let prval () = eat_vram (tty1.fr_vram, tty1.pf_vram) in () end
-end
-*)
