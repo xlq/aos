@@ -31,6 +31,7 @@
 //
 // Author of the file: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
 // Start Time: 2007
+// Edited in 2012 by Joshua Phillips
 //
 (* ****** ****** *)
 
