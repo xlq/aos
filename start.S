@@ -40,4 +40,8 @@ hang:
 _2boot_2edats__dynload_flag:
     .int 0
 
-.comm stack, STACK_SIZE
+.bss
+stack:
+.fill STACK_SIZE,1,0
+stack_bottom:
+.global stack_bottom

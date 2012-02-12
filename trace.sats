@@ -1,3 +1,6 @@
+(* Functions for printing messages for debugging.
+   The messages are output to the display and serial port. *)
+
 staload "prelude/limits.sats"
 
 fun init_serial
@@ -8,18 +11,20 @@ fun init_serial
 
 fun init_vga ():<!ref> void
 
-fun trace_loc_msg {loc_len, msg_len: nat}
-  (loc: string loc_len, msg: string msg_len):<!ntm,!ref> void
+fun trace (msg: string):<!ntm,!ref> void
 
-macdef traceloc (msg) = trace_loc_msg (string1_of_string #LOCATION, ,(msg))
+fun trace_loc_msg
+  (loc: string, msg: string):<!ntm,!ref> void
+
+macdef traceloc (msg) = trace_loc_msg (#LOCATION, ,(msg))
 
 fun halt_completely ():<!ntm> void
   = "halt_completely"
 
-fun panic_loc_msg {loc_len, msg_len: nat}
-  (loc: string loc_len, msg: string msg_len):<!ntm,!ref> void
+fun panic_loc_msg
+  (loc: string, msg: string):<!ntm,!ref> void
 
-macdef panicloc (msg) = panic_loc_msg (string1_of_string #LOCATION, ,(msg))
+macdef panicloc (msg) = panic_loc_msg (#LOCATION, ,(msg))
 
 %{#
   static inline void halt_completely (void)

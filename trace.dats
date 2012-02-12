@@ -34,8 +34,33 @@ in
     end
 end
 
-implement trace_loc_msg {loc_len, msg_len} (loc, msg) =
-begin
+implement trace (msg) =
+let
+  val msg = string1_of_string msg
+in
+  let prval vbox pfcom1 = pfcom1 in
+    if com1.enabled then
+      let
+        prval () = opt_unsome com1.obj
+        val () = send_string (com1.obj, string_length msg, msg)
+        prval () = opt_some com1.obj
+      in () end
+  end;
+  let prval vbox pfcon = pfcon in
+    if con.enabled then
+      let
+        prval () = opt_unsome con.obj
+        val () = put_string (con.obj, string_length msg, msg)
+        prval () = opt_some con.obj
+      in () end
+  end
+end
+
+implement trace_loc_msg (loc, msg) =
+let
+  val loc = string1_of_string loc
+  val msg = string1_of_string msg
+in
   let prval vbox pfcom1 = pfcom1 in
     if com1.enabled then
       let
@@ -56,8 +81,11 @@ begin
   end
 end
 
-implement panic_loc_msg {loc_len, msg_len} (loc, msg) =
-begin
+implement panic_loc_msg (loc, msg) =
+let
+  val loc = string1_of_string loc
+  val msg = string1_of_string msg
+in
   let prval vbox pfcom1 = pfcom1 in
     if com1.enabled then
       let

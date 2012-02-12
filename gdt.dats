@@ -25,6 +25,12 @@ in
   ()
 end
 
+%{^
+  extern char stack_bottom[];
+  #define get_stack_bottom() ((uint32_t) stack_bottom)
+%}
+extern fun get_stack_bottom (): uint32 = "mac#get_stack_bottom"
+
 (* The default task state segment. *)
 local
   fn s {x: Uint16} (x: int x):<> uint16 = uint16_of (uint1_of x)
@@ -32,8 +38,9 @@ local
 in
   var tss0: tss =
     @{ 
-      prev   = s 0, res0   = s 0, esp0   = i 0,
-      ss0    = s 0, res1   = s 0, esp1   = i 0,
+      prev   = s 0, res0   = s 0, esp0   = get_stack_bottom (),
+      ss0    = s SEG_DPL0_DATA,
+                    res1   = s 0, esp1   = i 0,
       ss1    = s 0, res2   = s 0, esp2   = i 0,
       ss2    = s 0, res3   = s 0, cr3    = i 0,
       eip    = i 0, eflags = i 0,
@@ -74,7 +81,51 @@ extern fun the_gdt ():
       "lgdt (%%esp)          \n"
       "addl $6,%%esp         \n"
       :: "c" (size), "a" (address)
-      : "cc");
+      : "cc"
+    );
+  }
+
+  /* Load data segment registers. */
+  static void load_data_segregs (int data_seg_sel)
+  {
+    __asm__ __volatile__ (
+      "movw %%ax,%%ds \n"
+      "movw %%ax,%%es \n"
+      "movw %%ax,%%fs \n"
+      "movw %%ax,%%gs \n"
+      :: "a" (data_seg_sel)
+    );
+  }
+
+  /* Load stack segment register. */
+  static void load_ss (int data_seg_sel)
+  {
+    __asm__ __volatile__ (
+      "movw %%ax,%%ss \n"
+      :: "a" (data_seg_sel)
+    );
+  }
+
+  /* Load the code segment register. */
+  static void load_cs (int code_seg_sel)
+  {
+    __asm__ __volatile__ (
+      "pushf        \n"  /* eflags */
+      "pushl %%eax  \n"  /* cs */
+      "pushl $1f    \n"  /* eip */
+      "iret         \n"
+      "1:           \n"
+      :: "a" (code_seg_sel)
+    );
+  }
+
+  /* Load the task register. */
+  static void ltr (int tss_seg_sel)
+  {
+    __asm__ __volatile__ (
+      "ltr %%ax"
+      :: "a" (tss_seg_sel)
+    );
   }
 %}
 
@@ -85,6 +136,22 @@ extern fun lgdt
    size: size_t (len * sizeof gdt_entry)):<> void
   = "lgdt"
 
+extern fun load_data_segregs
+  {x: Uint16} (data_seg_sel: int x):<> void
+  = "load_data_segregs"
+
+extern fun load_ss
+  {x: Uint16} (data_seg_sel: int x):<> void
+  = "load_ss"
+
+extern fun load_cs
+  {x: Uint16} (code_seg_sel: int x):<> void
+  = "load_cs"
+
+extern fun ltr
+  {x: Uint16} (task_seg_sel: int x):<> void
+  = "ltr"
+
 implement init () =
   if sizeof<gdt_entry> != size1_of 8 then begin
     panicloc ("sizeof<gdt_entry> is not 8.")
@@ -92,7 +159,16 @@ implement init () =
     val [l: addr] (pf_gdt | gdt) = the_gdt ()
     val () = fill_gdt (!gdt, &tss0)
   in
+    trace "LGDT ";
     lgdt {l} {6} (pf_gdt | gdt,
       size1_of_int1 (6 * int1_of sizeof<gdt_entry>));
-    halt_completely ();
+
+    (* Re-load all the data segment registers.
+       We can use the ring 3 segments, then we don't have to keep
+       switching. This is not a problem, because we're not using
+       segmentation as a means of protection. *)
+    trace "DS "; load_data_segregs SEG_DPL3_DATA;
+    trace "SS "; load_ss SEG_DPL0_DATA;
+    trace "CS "; load_cs SEG_DPL0_CODE;
+    trace "LTR "; ltr SEG_DPL3_TSS
   end
