@@ -2,15 +2,20 @@ ATSHOME ?= $(PWD)
 ATSHOMERELOC ?= 
 ATSOPT ?= ATSHOME=$(ATSHOME) ATSHOMERELOC=$(ATSHOMERELOC) $(ATSHOME)/bin/atsopt
 CC ?= gcc
-CFLAGS ?= -std=c99 -Wall -Wextra -Wno-unused -pedantic -Os -m32 -nostdlib -fno-stack-protector -ffunction-sections -fdata-sections -fomit-frame-pointer -g
+CFLAGS ?= -std=c99 -Wall -Wextra -Wno-unused \
+          -Os -m32 -nostdlib -fno-stack-protector \
+          -ffunction-sections -fdata-sections -fomit-frame-pointer -g
 LDFLAGS ?= -m32 -nostdlib -Wl,--build-id=none
 V ?= 0 # Verbosity
 
-SOURCES = prelude/limits.sats portio.sats \
+SOURCES = prelude/limits.sats \
+          portio.sats \
           boot.dats vga-text.sats vga-text.dats \
           enablable.sats enablable.dats \
           serial.sats serial.dats trace.sats trace.dats \
-          gdt.sats gdt.dats
+          gdt.sats gdt.dats interrupts.sats interrupts.dats
+
+PF_SOURCES = prelude/DATS/integer.dats
 
 ifeq ($(strip $(V)),0)
 .SILENT:
@@ -24,7 +29,7 @@ else
 ECHO = @\#
 endif
 
-as_sources := start.S
+as_sources := start.S isr.S
 sats_sources := $(filter %.sats,$(SOURCES))
 dats_sources := $(filter %.dats,$(SOURCES))
 sats_objects := $(patsubst %.sats,%_sats.o,$(sats_sources))
@@ -55,7 +60,7 @@ $(sats_objects) $(dats_objects): %.o: %.c | $(sats_objects:.o=.c) $(dats_objects
 
 $(dats_objects:.o=.c): %_dats.c: %.dats
 	$(ECHO) $(ATSSTR)
-	$(ATSOPT) --gline --output $@ --dynamic $< || { $(RM) $@ ; false ; }
+	$(ATSOPT) --output $@ --dynamic $< || { $(RM) $@ ; false ; }
 
 $(sats_objects:.o=.c): %_sats.c: %.sats
 	$(ECHO) $(ATSSTR)

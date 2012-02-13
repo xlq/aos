@@ -30,7 +30,7 @@ macdef panicloc (msg) = panic_loc_msg (#LOCATION, ,(msg))
   static inline void halt_completely (void)
   {
     while (1){
-      __asm__ __volatile__ ("cli ; hlt");
+      __asm__ volatile ("cli ; hlt");
     }
   }
 %}

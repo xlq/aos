@@ -5,7 +5,7 @@ staload "trace.sats"
 fn fill_gdt
   {len: int | len >= 6}
   (gdt: &(@[gdt_entry][len]),
-   tss_ptr: ptr): void =
+   tss_ptr: ptr):<> void =
 let
   fn u {x: Uint16} (x: int x):<> uint16 = uint16_of (uint1_of x)
   fn up {x: Uint16} (x: uintptr_t x):<> uint16 = uint16_of (uint1_of x)
@@ -63,18 +63,18 @@ end
 (* The default GDT. *)
 %{^
   static uint16_t the_gdt [4*6];
-  #define get_the_gdt() (the_gdt)
 %}
-extern fun the_gdt ():
-  [l: agz] (@[gdt_entry][6] @ l | ptr l) = "mac#get_the_gdt"
-(* XXX: Should be [gdt_entry?] *)
 
+(* XXX: Should be [gdt_entry?] *)
+val (pf_the_gdt | the_gdt) =
+  $extval ([l: agz] (vbox (@[gdt_entry][6] @ l) | ptr l),
+           "the_gdt")
 
 %{^
   /* Load the GDT register with the address and size of the GDT. */
   static void lgdt (void *address, size_t size)
   {
-    __asm__ __volatile__ (
+    __asm__ volatile (
       "subl $6,%%esp         \n"
       "movw %%cx,(%%esp)     \n"
       "movl %%eax,2(%%esp)   \n"
@@ -88,7 +88,7 @@ extern fun the_gdt ():
   /* Load data segment registers. */
   static void load_data_segregs (int data_seg_sel)
   {
-    __asm__ __volatile__ (
+    __asm__ volatile (
       "movw %%ax,%%ds \n"
       "movw %%ax,%%es \n"
       "movw %%ax,%%fs \n"
@@ -100,7 +100,7 @@ extern fun the_gdt ():
   /* Load stack segment register. */
   static void load_ss (int data_seg_sel)
   {
-    __asm__ __volatile__ (
+    __asm__ volatile (
       "movw %%ax,%%ss \n"
       :: "a" (data_seg_sel)
     );
@@ -109,7 +109,7 @@ extern fun the_gdt ():
   /* Load the code segment register. */
   static void load_cs (int code_seg_sel)
   {
-    __asm__ __volatile__ (
+    __asm__ volatile (
       "pushf        \n"  /* eflags */
       "pushl %%eax  \n"  /* cs */
       "pushl $1f    \n"  /* eip */
@@ -122,7 +122,7 @@ extern fun the_gdt ():
   /* Load the task register. */
   static void ltr (int tss_seg_sel)
   {
-    __asm__ __volatile__ (
+    __asm__ volatile (
       "ltr %%ax"
       :: "a" (tss_seg_sel)
     );
@@ -130,8 +130,8 @@ extern fun the_gdt ():
 %}
 
 extern fun lgdt
-  {l: agz} {len: nat}
-  (pf: @[gdt_entry][len] @ l |
+  {l: addr} {len: nat}
+  (pf: !(@[gdt_entry][len] @ l) |
    address: ptr l,
    size: size_t (len * sizeof gdt_entry)):<> void
   = "lgdt"
@@ -155,13 +155,18 @@ extern fun ltr
 implement init () =
   if sizeof<gdt_entry> != size1_of 8 then begin
     panicloc ("sizeof<gdt_entry> is not 8.")
-  end else let
-    val [l: addr] (pf_gdt | gdt) = the_gdt ()
-    val () = fill_gdt (!gdt, &tss0)
-  in
+  end else begin
+    (* Initialise the GDT. *)
+    let prval vbox pf_the_gdt = pf_the_gdt in
+      fill_gdt (!the_gdt, &tss0)
+    end;
+
+    (* Load the GDT. *)
     trace "LGDT ";
-    lgdt {l} {6} (pf_gdt | gdt,
-      size1_of_int1 (6 * int1_of sizeof<gdt_entry>));
+    let prval vbox pf_the_gdt = pf_the_gdt in
+      lgdt (pf_the_gdt | the_gdt,
+        size1_of_int1 (6 * int1_of sizeof<gdt_entry>))
+    end;
 
     (* Re-load all the data segment registers.
        We can use the ring 3 segments, then we don't have to keep

@@ -13,6 +13,7 @@
 #define atspre_shr(a,b) ((a)>>(b))
 #define atspre_land(a,b) ((a)&(b))
 #define atspre_lor(a,b) ((a)|(b))
+#define atspre_lnot(a) (~(a))
 #define atspre_not(a) (!(a))
 
 static inline bool atspre_premul_int1_int1 (int a, int b)

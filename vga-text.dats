@@ -19,16 +19,6 @@ implement bright_magenta   = 13
 implement bright_yellow    = 14
 implement bright_white     = 15
 
-prval pf_exp_2_4: EXP2(4,0x10) =
-  EXP2ind(EXP2ind(EXP2ind(EXP2ind(EXP2bas()))))
-
-prval pf_exp_2_8: EXP2(8,0x100) =
-  EXP2ind(EXP2ind(EXP2ind(EXP2ind(pf_exp_2_4))))
-
-prval pf_exp_2_16: EXP2(16,0x10000) =
-  EXP2ind(EXP2ind(EXP2ind(EXP2ind(
-  EXP2ind(EXP2ind(EXP2ind(EXP2ind(pf_exp_2_8))))))))
-
 typedef cell = @{ ch = char, attrib = uint8 }
 
 absview vram (l: addr)
@@ -91,8 +81,8 @@ implement set_colour (con, fg) =
 
 implement set_background (con, bg) =
 let
-  val (pfbg' | bg') = ushl2 (pf_exp_2_4 | uint1_of bg, 4)
-  prval () = EXP2_isfun (pfbg', pf_exp_2_8)
+  val (pfbg' | bg') = ushl2 (,(pf_exp2_const 4) | uint1_of bg, 4)
+  prval () = EXP2_isfun (pfbg', ,(pf_exp2_const 8))
   val bg' = uint8_of bg'
 in
   con.attrib := ((con.attrib land uint8_of 0x0Fu) lor bg')
@@ -106,7 +96,7 @@ let
   val pos_hi = inb (uint16_of 0x3D5u)
   val () = outb (uint16_of 0x3D4u, uint8_of 15u)
   val pos_lo = inb (uint16_of 0x3D5u)
-  val pos = ushl (pf_exp_2_8 |
+  val pos = ushl (,(pf_exp2_const 8) |
       uint_of pos_hi, 8)
     lor uint_of pos_lo
   val pos_y = pos / uint1_of self.width
@@ -127,8 +117,8 @@ let
 in
   if tmp <= uint1_of UINT16_MAX then
     let
-      val (pftmphi | tmp_hi) = ushr2 (pf_exp_2_16 | tmp, 8)
-      prval () = EXP2_isfun (pftmphi, pf_exp_2_8)
+      val (pftmphi | tmp_hi) = ushr2 (,(pf_exp2_const 16) | tmp, 8)
+      prval () = EXP2_isfun (pftmphi, ,(pf_exp2_const 8))
       val () = outb (uint16_of 0x3D4u, uint8_of 14u)
       val () = outb (uint16_of 0x3D5u, uint8_of tmp_hi)
       val () = outb (uint16_of 0x3D4u, uint8_of 15u)

@@ -234,4 +234,9 @@ prfun EXP2_mul
 #print "Loading [arith.sats] finishes!\n"
 #endif // end of [VERBOSE_PRELUDE]
 
+(* Construct a proof of EXP2 (n, x)
+   e.g. ,(pf_exp2_const 16) will produce EXP2 (16, 65536). *)
+macrodef rec pf_exp2_const n =
+  if n > 0 then `(EXP2ind (,(pf_exp2_const (n-1)))) else `(EXP2bas ())
+
 (* end of [arith.sats] *)

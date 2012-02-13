@@ -205,6 +205,18 @@ fun ushl2
   [r:Uint] (needbits(r,xbits+n) | uint r)
    = "mac#atspre_shl"
 
+(* x << n == x * 2**n == y *)
+propdef SHL (x: int, n: int, y: int) =
+  [expn: pos] [y >= 0] (EXP2 (n, expn), MUL (x, expn, y))
+
+prfun SHL_make {x, n: nat} (): [y: nat] SHL (x, n, y)
+
+fun ushl3
+  {x, n: nat} {y: Uint}
+  (pf: SHL (x, n, y) |
+   x: uint x, n: int n):<>
+  uint y = "mac#atspre_shl"
+
 fun shr_uint1_int1
   {x: int} {n: nat}
   (x: uint x, n: int n):<>
