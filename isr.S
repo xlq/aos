@@ -14,19 +14,25 @@ invoke_handler:
   iret
 
 /* WARNING: This code is carefully crafted so that
-   each ISR is exactly the same size! */
+   each ISR is exactly the same size!
+   Because one can't force a long displacement jump,
+   the jump target is loaded into a register first.
+   (Otherwise the first n isrs are shorter than
+   the others!) */
 
 #define EXC_HANDLER(n)                           \
   nop  /* same size as pushl %eax */            ;\
   pusha                                         ;\
   movl $n,%eax                                  ;\
-  jmp invoke_handler
+  movl $invoke_handler,%edx                     ;\
+  jmp *%edx
 
 #define INT_HANDLER(n)                           \
   pushl %eax  /* dummy error code */            ;\
   pusha                                         ;\
   movl $n,%eax                                  ;\
-  jmp invoke_handler
+  movl $invoke_handler,%edx                     ;\
+  jmp *%edx
 
 isr0:
 EXC_HANDLER(0)
