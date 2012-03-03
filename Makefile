@@ -12,10 +12,13 @@ SOURCES = prelude/limits.sats \
           portio.sats \
           boot.dats vga-text.sats vga-text.dats \
           enablable.sats enablable.dats \
+          bitflags.sats bitflags.dats \
           serial.sats serial.dats trace.sats trace.dats \
           gdt.sats gdt.dats interrupts.sats interrupts.dats
 
-PF_SOURCES = prelude/DATS/integer.dats
+PF_SOURCES = prelude/DATS/integer.dats prelude/DATS/arith.dats
+
+SOURCES := $(SOURCES) $(PF_SOURCES)
 
 ifeq ($(strip $(V)),0)
 .SILENT:
@@ -35,6 +38,7 @@ dats_sources := $(filter %.dats,$(SOURCES))
 sats_objects := $(patsubst %.sats,%_sats.o,$(sats_sources))
 dats_objects := $(patsubst %.dats,%_dats.o,$(dats_sources))
 objects := $(sats_objects) $(dats_objects)
+prelude_sources := $(wildcard prelude/SATS/*.sats)
 
 clean_files := test $(objects) $(objects:.o=.c)
 
@@ -58,11 +62,11 @@ $(sats_objects) $(dats_objects): %.o: %.c | $(sats_objects:.o=.c) $(dats_objects
 	$(ECHO) $(CCSTR)
 	$(CC) $(CFLAGS) -I. -c -o $@ $<
 
-$(dats_objects:.o=.c): %_dats.c: %.dats
+$(dats_objects:.o=.c): %_dats.c: %.dats $(prelude_sources)
 	$(ECHO) $(ATSSTR)
 	$(ATSOPT) --output $@ --dynamic $< || { $(RM) $@ ; false ; }
 
-$(sats_objects:.o=.c): %_sats.c: %.sats
+$(sats_objects:.o=.c): %_sats.c: %.sats $(prelude_sources)
 	$(ECHO) $(ATSSTR)
 	$(ATSOPT) --gline --output $@ --static $< || { $(RM) $@ ; false ; }
 

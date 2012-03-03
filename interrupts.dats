@@ -155,7 +155,7 @@ implement unmask_irq ([irq: int] irq) =
     let
       val a = inb (w PIC1_DATA)
       prval pf_bit = SHL_make {1, irq} ()
-      prval () = shl_le (pf_bit, SHL_1_7)
+      prval () = SHL_le (pf_bit, SHL_1_7)
       val bit = ushl (pf_bit | 1u, irq)
       val a = a land ~ uint8_of bit
       val () = outb (w PIC1_DATA, a)
@@ -165,7 +165,7 @@ implement unmask_irq ([irq: int] irq) =
     let
       val a = inb (w PIC2_DATA)
       prval pf_bit = SHL_make {1,irq-8} ()
-      prval () = shl_le (pf_bit, SHL_1_7)
+      prval () = SHL_le (pf_bit, SHL_1_7)
       val bit = ushl (pf_bit | 1u, irq-8)
       val a = a land ~ uint8_of bit
       val () = outb (w PIC2_DATA, a)
@@ -178,7 +178,7 @@ implement mask_irq ([irq: int] irq) =
     let
       val a = inb (w PIC1_DATA)
       prval pf_bit = SHL_make {1, irq} ()
-      prval () = shl_le (pf_bit, SHL_1_7)
+      prval () = SHL_le (pf_bit, SHL_1_7)
       val bit = ushl (pf_bit | 1u, irq)
       val a = a lor uint8_of bit
       val () = outb (w PIC1_DATA, a)
@@ -188,7 +188,7 @@ implement mask_irq ([irq: int] irq) =
     let
       val a = inb (w PIC2_DATA)
       prval pf_bit = SHL_make {1,irq-8} ()
-      prval () = shl_le (pf_bit, SHL_1_7)
+      prval () = SHL_le (pf_bit, SHL_1_7)
       val bit = ushl (pf_bit | 1u, irq-8)
       val a = a lor uint8_of bit
       val () = outb (w PIC2_DATA, a)

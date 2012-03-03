@@ -1,7 +1,10 @@
 staload "trace.sats"
 staload GDT = "gdt.sats"
 staload INT = "interrupts.sats"
+// staload Multiboot = "multiboot.sats"
 dynload "prelude/DATS/integer.dats"
+dynload "prelude/DATS/arith.dats"
+dynload "bitflags.dats"
 dynload "vga-text.dats"
 dynload "serial.dats"
 dynload "trace.dats"
@@ -13,7 +16,7 @@ extern fun ats_entry_point (): void = "ats_entry_point"
 implement ats_entry_point () =
 begin
   init_serial (1, 115200u);
-  init_vga ();
+  // init_vga ();
   traceloc "Hello, world!\n";
   $GDT.init ();
   $INT.init ();

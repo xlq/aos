@@ -126,6 +126,13 @@ prfun mul_distribute {m:int} {n1,n2:int} {p1,p2:int}
 prfun mul_distribute2 {m1,m2:int} {n:int} {p1,p2:int}
   (pf1: MUL (m1, n, p1), pf2: MUL (m2, n, p2)):<prf> MUL (m1+m2, n, p1+p2)
 
+// m1 <= m2 --> m1*n <= m2*n
+prfun mul_monotone
+  {m1, m2: nat | m1 <= m2} {n: nat} {m1n, m2n: nat}
+  (pf1: MUL (m1, n, m1n), pf2: MUL (m2, n, m2n)):
+  [m1n <= m2n] void
+
+
 (* ****** ****** *)
 
 prfun
@@ -165,6 +172,11 @@ praxi divmod_elim
   {x,y:int | x >= 0; y > 0} {q,r:int}
   (pf: DIVMOD (x, y, q, r)): [qy:int | 0 <= r; r < y; x==qy+r] MUL (q, y, qy)
 // end of [divmod_elim]
+
+praxi div_monotone
+  {m1, m2: nat | m1 <= m2} {n: pos} {q1, r1, q2, r2: int}
+  (pf1: DIVMOD (m1, n, q1, r1), pf2: DIVMOD (m2, n, q2, r2)):
+  [q1 <= q2] void
 
 (* ****** ****** *)
 
@@ -230,9 +242,36 @@ prfun EXP2_mul
 
 (* ****** ****** *)
 
-#if VERBOSE_PRELUDE #then
-#print "Loading [arith.sats] finishes!\n"
-#endif // end of [VERBOSE_PRELUDE]
+// x << n == x * 2**n == y
+propdef SHL (x: int, n: int, y: int) =
+  [expn: pos] [y >= 0] (EXP2 (n, expn), MUL (x, expn, y))
+
+prfun SHL_make {x, n: nat} (): [y: nat] SHL (x, n, y)
+
+// n1 <= n2 --> (x << n1) <= (x << n2)
+prfun SHL_le
+  {x, n1, n2, y1, y2: nat | n1 <= n2}
+  (pf1: SHL (x, n1, y1), pf2: SHL (x, n2, y2)):
+  [y1 <= y2] void
+
+// x <= y --> (x << n) <= (y << n)
+prfun SHL_monotone {x, y, n, xn, yn: nat | x <= y}
+  (pf1: SHL (x, n, xn), pf2: SHL (y, n, yn)):
+  [xn <= yn] void
+
+// x >> n == x / 2**n == y
+propdef SHR (x: int, n: int, y: int) =
+  [expn: pos] [y >= 0] (EXP2 (n, expn), DIV (x, expn, y))
+
+prfun SHR_make {x, n: nat} (): [y: nat] SHR (x, n, y)
+
+// x <= y --> (x >> n) <= (y >> n)
+prfun SHR_monotone {x, y, n, xn, yn: nat | x <= y}
+  (pf1: SHR (x, n, xn), pf2: SHR (y, n, yn)):
+  [xn <= yn] void
+
+
+(* ****** ****** *)
 
 // Calculate 2**n
 macrodef rec exp2 n =
@@ -246,5 +285,9 @@ macrodef rec pf_mul_const n =
 // e.g. ,(pf_exp2_const 16) will produce EXP2 (16, 65536).
 macrodef rec pf_exp2_const n =
   if n > 0 then `(EXP2ind (,(pf_exp2_const (n-1)))) else `(EXP2bas ())
+
+macrodef pf_shl_const x n =
+  `( ( ,(pf_exp2_const n), ,(pf_mul_const x) ) )
+
 
 (* end of [arith.sats] *)

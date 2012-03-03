@@ -187,21 +187,6 @@ fun umod2
   [q, r: Uint | r < b] (DIVMOD (a, b, q, r) | uint r)
   = "mac#atspre_mod"
 
-// x << n == x * 2**n == y
-propdef SHL (x: int, n: int, y: int) =
-  [expn: pos] [y >= 0] (EXP2 (n, expn), MUL (x, expn, y))
-
-macrodef pf_shl_const x n =
-  `( ( ,(pf_exp2_const n), ,(pf_mul_const x) ) )
-
-prfun SHL_make {x, n: nat} (): [y: nat] SHL (x, n, y)
-
-// if n1 <= n2 then (x << n1) <= (x << n2)
-prfun shl_le
-  {x, n1, n2, y1, y2: nat | n1 <= n2}
-  (pf1: SHL (x, n1, y1), pf2: SHL (x, n2, y2)):
-  [y1 <= y2] void
-
 fun ushl
   {x, n: nat} {y: Uint}
   (pf: SHL (x, n, y) |
@@ -214,12 +199,6 @@ fun shr_uint1_int1
   [r:Uint] uint r
   = "mac#atspre_shr"
 overload >> with shr_uint1_int1
-
-// x >> n == x / 2**n == y
-propdef SHR (x: int, n: int, y: int) =
-  [expn: pos] [y >= 0] (EXP2 (n, expn), DIV (x, expn, y))
-
-prfun SHR_make {x, n: nat} (): [y: nat] SHR (x, n, y)
 
 fun ushr
   {x, n: int}
