@@ -16,6 +16,11 @@ mb_header:
 .section startup, "ax"
 
 _start:
+    cli
+    cld
+    movb $0x80,%al
+    outb %al,$0x70  /* disable NMI */
+
     /* Set up initial stack. */
     movl $(stack + STACK_SIZE),%esp
 
@@ -31,6 +36,7 @@ _start:
     call _2boot_2edats__dynload
     call ats_entry_point
 
+    /* fall through */
 hang:
     cli
     hlt

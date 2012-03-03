@@ -2,7 +2,7 @@ ATSHOME ?= $(PWD)
 ATSHOMERELOC ?= 
 ATSOPT ?= ATSHOME=$(ATSHOME) ATSHOMERELOC=$(ATSHOMERELOC) $(ATSHOME)/bin/atsopt
 CC ?= gcc
-CFLAGS ?= -std=c99 -Wall -Wextra -Wno-unused \
+CFLAGS ?= -std=c99 -Wall -Wextra -Wno-unused -march=i386 \
           -Os -m32 -nostdlib -fno-stack-protector \
           -ffunction-sections -fdata-sections -fomit-frame-pointer -g
 LDFLAGS ?= -m32 -nostdlib -Wl,--build-id=none
