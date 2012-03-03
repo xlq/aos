@@ -5,7 +5,7 @@ staload "prelude/limits.sats"
 
 fun init_serial
   {com_number: int | com_number >= 1 && com_number <= 4}
-  {baud: pos}
+  {baud: Uint | baud > 0}
   (com_number: int com_number,
    baud: uint baud):<!ref> void
 

@@ -4,11 +4,15 @@ fun main_argc_argv {n: igz}
   (argc: int n, argv: &(@[ptr][n])): void
 prfun main_dummy (): void
 
+symintr byte_of ubyte_of byte1_of ubyte1_of
+symintr short_of ushort_of short1_of ushort1_of
 symintr int_of uint_of int1_of uint1_of
+symintr long_of ulong_of long1_of ulong1_of
 symintr uint8_of uint16_of uint32_of
+symintr uint8_1_of uint16_1_of uint32_1_of
 symintr + - * / mod gcd
 symintr < > <= >= = !=
-symintr && || << >> land lor not
+symintr && || << >> land lor not ~
 symintr *?
 infixl ( * ) *?
 

@@ -42,8 +42,12 @@ abst@ype void_t0ype = $extype "ats_void_type"
 
 abst@ype bool_t0ype = $extype "bool"
 abst@ype char_t0ype = $extype "char"
+abst@ype byte_t0ype = $extype "schar"
+abst@ype ubyte_t0ype = $extype "uchar"
 abst@ype int_t0ype = $extype "int"
 abst@ype uint_t0ype = $extype "uint"
+abst@ype int_short_t0ype = $extype "short"
+abst@ype uint_short_t0ype = $extype "ushort"
 abst@ype int_long_t0ype = $extype "long"
 abst@ype uint_long_t0ype = $extype "ulong"
 abst@ype size_t0ype = $extype "size_t"
@@ -54,8 +58,12 @@ abstype ptr_type = $extype "ptr"
 
 abst@ype bool_bool_t0ype (bool) = bool_t0ype
 abst@ype char_char_t0ype (char) = char_t0ype
+abst@ype byte_int_t0ype (int) = byte_t0ype
+abst@ype ubyte_int_t0ype (int) = ubyte_t0ype
 abst@ype int_int_t0ype (int) = int_t0ype
 abst@ype uint_int_t0ype (int) = uint_t0ype
+abst@ype int_short_int_t0ype (int) = int_short_t0ype
+abst@ype uint_short_int_t0ype (int) = uint_short_t0ype
 abst@ype lint_int_t0ype (int) = int_long_t0ype
 abst@ype ulint_int_t0ype (int) = uint_long_t0ype
 abst@ype size_int_t0ype (int) = size_t0ype
@@ -121,12 +129,18 @@ stacst lte_addr_addr_bool : (addr, addr) -> bool
 stacst eq_addr_addr_bool : (addr, addr) -> bool
 stacst neq_addr_addr_bool : (addr, addr) -> bool
 
+stacst lte_cls_cls_bool : (cls, cls) -> bool
+
 (* Short names. *)
 stadef void = void_t0ype
 stadef bool = bool_t0ype
 stadef char = char_t0ype
+stadef byte = byte_t0ype
+stadef ubyte = ubyte_t0ype
 stadef int = int_t0ype
 stadef uint = uint_t0ype
+stadef short = int_short_t0ype
+stadef ushort = uint_short_t0ype
 stadef long = int_long_t0ype
 stadef ulong = uint_long_t0ype
 stadef size_t = size_t0ype
@@ -136,10 +150,14 @@ stadef uintptr_t = uintptr_t0ype
 stadef ptr = ptr_type
 stadef bool = bool_bool_t0ype
 stadef char = char_char_t0ype
+stadef byte = byte_int_t0ype
+stadef ubyte = ubyte_int_t0ype
 stadef int = int_int_t0ype
 stadef uint = uint_int_t0ype
-stadef lint = lint_int_t0ype
-stadef ulint = ulint_int_t0ype
+stadef short = int_short_int_t0ype
+stadef ushort = uint_short_int_t0ype
+stadef long = lint_int_t0ype
+stadef ulong = ulint_int_t0ype
 stadef size_t = size_int_t0ype
 stadef ssize_t = ssize_int_t0ype
 stadef uintptr_t = uintptr_int_t0ype
@@ -195,9 +213,9 @@ stadef null = null_addr
 
 (* ****** ****** *)
 
-abst@ype uint8 = $extype "uint8_t"
-abst@ype uint16 = $extype "uint16_t"
-abst@ype uint32 = $extype "uint32_t"
+// abst@ype uint8 = $extype "uint8_t"
+// abst@ype uint16 = $extype "uint16_t"
+// abst@ype uint32 = $extype "uint32_t"
 
 
 (* ****** ****** *)

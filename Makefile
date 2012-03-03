@@ -24,6 +24,7 @@ ifeq ($(strip $(V)),0)
 .SILENT:
 
 ECHO = echo
+GENSTR = "    GEN   $<"
 ATSSTR = "    ATS   $<"
 CCSTR  = "    CC    $<"
 LDSTR  = "    LD    $@"
@@ -38,7 +39,7 @@ dats_sources := $(filter %.dats,$(SOURCES))
 sats_objects := $(patsubst %.sats,%_sats.o,$(sats_sources))
 dats_objects := $(patsubst %.dats,%_dats.o,$(dats_sources))
 objects := $(sats_objects) $(dats_objects)
-prelude_sources := $(wildcard prelude/SATS/*.sats)
+prelude_sources := $(wildcard prelude/SATS/*.sats) prelude/SATS/integer.sats
 
 clean_files := test $(objects) $(objects:.o=.c)
 
@@ -69,6 +70,10 @@ $(dats_objects:.o=.c): %_dats.c: %.dats $(prelude_sources)
 $(sats_objects:.o=.c): %_sats.c: %.sats $(prelude_sources)
 	$(ECHO) $(ATSSTR)
 	$(ATSOPT) --gline --output $@ --static $< || { $(RM) $@ ; false ; }
+
+prelude/SATS/integer.sats: gen_integer.lua
+	$(ECHO) $(GENSTR)
+	lua gen_integer.lua > $@ || { $(RM) $@ ; false ; }
 
 .PHONY: depend
 

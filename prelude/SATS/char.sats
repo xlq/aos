@@ -3,5 +3,5 @@ fun eq_char1_char1 {a, b: char}
   = "mac#atspre_eq"
 overload = with eq_char1_char1
 
-castfn uint8_of_char (a: char):<> uint8
-overload uint8_of with uint8_of_char
+castfn ubyte_of_char (a: char):<> ubyte
+overload ubyte_of with ubyte_of_char

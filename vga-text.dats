@@ -76,7 +76,7 @@ implement default_colours (con) = con.attrib := uint8_of 7u
 
 implement set_colour (con, fg) =
   con.attrib := uint8_of (
-    (uint_of con.attrib land 0xF0u)
+    (uint1_of (uint8_1_of con.attrib) land 0xF0u)
     lor uint1_of fg)
 
 implement set_background (con, [bg: int] bg) =
@@ -98,11 +98,11 @@ let
   val pos_hi = inb (uint16_of 0x3D5u)
   val () = outb (uint16_of 0x3D4u, uint8_of 15u)
   val pos_lo = inb (uint16_of 0x3D5u)
-  val [pos_hi: int] pos_hi = uint_of pos_hi
+  val [pos_hi: int] pos_hi = uint8_1_of pos_hi
   prval pf_pos_hi = SHL_make {pos_hi, 8} ()
   prval () = SHL_monotone (pf_pos_hi, ,(pf_shl_const 0xFF 8))
-  val pos = ushl (pf_pos_hi | pos_hi, 8)
-    lor uint_of pos_lo
+  val pos = ushl (pf_pos_hi | uint1_of pos_hi, 8)
+    lor uint1_of (uint8_1_of pos_lo)
   val pos_y = pos / uint1_of self.width
 in
   if pos_y < uint1_of self.height then

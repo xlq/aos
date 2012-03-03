@@ -82,12 +82,12 @@ implement send_char (port, ch) =
   in
     (* Wait for UART to be ready. *)
     while ((inb (uint16_of (port.port + 5u)) land uint8_of 0x20u) = uint8_of 0u) ();
-    outb (uint16_of port.port, uint8_of (ch')) (* send! *)
+    outb (uint16_of port.port, ubyte_of (ch')) (* send! *)
   end
 
 implement send_string (port, len, str) =
 let
-  var i: [i: nat] int i
+  var i: [i: Nat] int i
 in
   for (i := 0; i < len; i := i + 1)
     send_char (port, str[i])

@@ -10,7 +10,7 @@ abst@ype serial_port =
 
 fun init
   {com_number: int | com_number >= 1 && com_number <= 4}
-  {baud: pos}
+  {baud: Uint | baud > 0}
   (port: &serial_port? >> opt(serial_port, success),
    com_number: int com_number,
    baud: uint baud):<> #[success: bool] bool success
