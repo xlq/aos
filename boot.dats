@@ -1,6 +1,7 @@
 staload "trace.sats"
 staload GDT = "gdt.sats"
 staload INT = "interrupts.sats"
+dynload "prelude/DATS/integer.dats"
 dynload "vga-text.dats"
 dynload "serial.dats"
 dynload "trace.dats"

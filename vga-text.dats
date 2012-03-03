@@ -79,10 +79,35 @@ implement set_colour (con, fg) =
     (uint_of con.attrib land 0xF0u)
     lor uint1_of fg)
 
-implement set_background (con, bg) =
+prfn shl_exp_le {x, y, n, xn, yn: nat | x <= y}
+  ((pf1e, pf1m): SHL (x, n, xn), (pf2e, pf2m): SHL (y, n, yn)):
+  [xn <= yn] void =
 let
-  val (pfbg' | bg') = ushl2 (,(pf_exp2_const 4) | uint1_of bg, 4)
-  prval () = EXP2_isfun (pfbg', ,(pf_exp2_const 8))
+  prval () = EXP2_isfun (pf1e, pf2e)
+  prval () = mul_nat_nat_nat (mul_distribute2 (pf2m, mul_negate pf1m))
+in () end
+
+extern prfun shr_exp_le {x, y, n, xn, yn: nat | x <= y}
+  (pf1: SHR (x, n, xn), pf2: SHR (y, n, yn)):
+  [xn <= yn] void
+
+//prfn shr_exp_le {x, y, n, xn, yn: nat | x <= y}
+//  ((pf1e, pf1d): SHR (x, n, xn), (pf2e, pf2d): SHR (y, n, yn)):
+//  [xn <= yn] void =
+//let
+//  prval () = EXP2_isfun (pf1e, pf2e)
+//  prval pf_mul1 = divmod_elim (pf1d)
+//  prval pf_mul2 = divmod_elim (pf2d)
+//  prval () = mul_nat_nat_nat (mul_distribute2 (pf_mul2, mul_negate pf_mul1))
+//in () end
+
+
+implement set_background (con, [bg: int] bg) =
+let
+  val bg = uint1_of bg
+  prval pf_bg = SHL_make {bg, 4} ()
+  prval () = shl_exp_le (pf_bg, ,(pf_shl_const 0xF 4))
+  val bg' = ushl (pf_bg | bg, 4)
   val bg' = uint8_of bg'
 in
   con.attrib := ((con.attrib land uint8_of 0x0Fu) lor bg')
@@ -96,8 +121,10 @@ let
   val pos_hi = inb (uint16_of 0x3D5u)
   val () = outb (uint16_of 0x3D4u, uint8_of 15u)
   val pos_lo = inb (uint16_of 0x3D5u)
-  val pos = ushl (,(pf_exp2_const 8) |
-      uint_of pos_hi, 8)
+  val [pos_hi: int] pos_hi = uint_of pos_hi
+  prval pf_pos_hi = SHL_make {pos_hi, 8} ()
+  prval () = shl_exp_le (pf_pos_hi, ,(pf_shl_const 0xFF 8))
+  val pos = ushl (pf_pos_hi | pos_hi, 8)
     lor uint_of pos_lo
   val pos_y = pos / uint1_of self.width
 in
@@ -117,8 +144,8 @@ let
 in
   if tmp <= uint1_of UINT16_MAX then
     let
-      val (pftmphi | tmp_hi) = ushr2 (,(pf_exp2_const 16) | tmp, 8)
-      prval () = EXP2_isfun (pftmphi, ,(pf_exp2_const 8))
+      val (pf_tmp_hi | tmp_hi) = ushr (tmp, 8)
+      prval () = shr_exp_le (pf_tmp_hi, (,(pf_exp2_const 8), div_istot {0xFFFF, 0x100} ()))
       val () = outb (uint16_of 0x3D4u, uint8_of 14u)
       val () = outb (uint16_of 0x3D5u, uint8_of tmp_hi)
       val () = outb (uint16_of 0x3D4u, uint8_of 15u)

@@ -4,8 +4,8 @@
 #define INT_MIN (~0x80000000)
 #define UINT_MAX 0xFFFFFFFF
 #define UINT_MIN 0
-#define INT_BIT 16
-#define UINT_BIT 16
+#define INT_BIT 32
+#define UINT_BIT 32
 
 #define UINT8_MIN 0
 #define UINT16_MIN 0

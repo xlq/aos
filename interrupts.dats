@@ -147,17 +147,6 @@ end
 implement vector_of_irq (irq) = irq + 0x20
 implement irq_of_vector (vector) = vector - 0x20
 
-prfn exple
-  {x, n1, n2, y1, y2: nat | n1 <= n2}
-  (pf1: SHL (x, n1, y1), pf2: SHL (x, n2, y2)):
-  [y1 <= y2] void =
-let
-  prval (pf_exp1, pf_mul1) = pf1
-  prval (pf_exp2, pf_mul2) = pf2
-  prval () = EXP2_monotone (pf_exp1, pf_exp2)
-  prval () = mul_nat_nat_nat (mul_distribute (mul_negate2 (pf_mul1), pf_mul2))
-in () end
-
 prval SHL_1_7: SHL (1, 7, 128) = (,(pf_exp2_const 7), MULind(MULbas()))
 
 implement unmask_irq ([irq: int] irq) =
@@ -166,8 +155,8 @@ implement unmask_irq ([irq: int] irq) =
     let
       val a = inb (w PIC1_DATA)
       prval pf_bit = SHL_make {1, irq} ()
-      prval () = exple (pf_bit, SHL_1_7)
-      val bit = ushl3 (pf_bit | 1u, irq)
+      prval () = shl_le (pf_bit, SHL_1_7)
+      val bit = ushl (pf_bit | 1u, irq)
       val a = a land ~ uint8_of bit
       val () = outb (w PIC1_DATA, a)
     in () end
@@ -176,8 +165,8 @@ implement unmask_irq ([irq: int] irq) =
     let
       val a = inb (w PIC2_DATA)
       prval pf_bit = SHL_make {1,irq-8} ()
-      prval () = exple (pf_bit, SHL_1_7)
-      val bit = ushl3 (pf_bit | 1u, irq-8)
+      prval () = shl_le (pf_bit, SHL_1_7)
+      val bit = ushl (pf_bit | 1u, irq-8)
       val a = a land ~ uint8_of bit
       val () = outb (w PIC2_DATA, a)
     in () end
@@ -189,8 +178,8 @@ implement mask_irq ([irq: int] irq) =
     let
       val a = inb (w PIC1_DATA)
       prval pf_bit = SHL_make {1, irq} ()
-      prval () = exple (pf_bit, SHL_1_7)
-      val bit = ushl3 (pf_bit | 1u, irq)
+      prval () = shl_le (pf_bit, SHL_1_7)
+      val bit = ushl (pf_bit | 1u, irq)
       val a = a lor uint8_of bit
       val () = outb (w PIC1_DATA, a)
     in () end
@@ -199,8 +188,8 @@ implement mask_irq ([irq: int] irq) =
     let
       val a = inb (w PIC2_DATA)
       prval pf_bit = SHL_make {1,irq-8} ()
-      prval () = exple (pf_bit, SHL_1_7)
-      val bit = ushl3 (pf_bit | 1u, irq-8)
+      prval () = shl_le (pf_bit, SHL_1_7)
+      val bit = ushl (pf_bit | 1u, irq-8)
       val a = a lor uint8_of bit
       val () = outb (w PIC2_DATA, a)
     in () end

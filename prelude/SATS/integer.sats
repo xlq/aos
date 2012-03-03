@@ -187,31 +187,22 @@ fun umod2
   [q, r: Uint | r < b] (DIVMOD (a, b, q, r) | uint r)
   = "mac#atspre_mod"
 
-(* x needs at least nbits bits to store. *)
-propdef needbits (x: int, nbits: int) =
-  [nexp: nat | x < nexp] [x >= 0] [nbits >= 0] EXP2 (nbits, nexp)
-
-fun ushl
-  {x: int} {xbits: int} {n: Int | n <= UINT_BIT-xbits}
-  (pf: needbits(x,xbits) |
-   x: uint x, n: int n):<>
-  [r:Uint] uint r
-   = "mac#atspre_shl"
-
-fun ushl2
-  {x: int} {xbits: int} {n: Nat | n <= UINT_BIT-xbits}
-  (pf: needbits(x,xbits) |
-   x: uint x, n: int n):<>
-  [r:Uint] (needbits(r,xbits+n) | uint r)
-   = "mac#atspre_shl"
-
-(* x << n == x * 2**n == y *)
+// x << n == x * 2**n == y
 propdef SHL (x: int, n: int, y: int) =
   [expn: pos] [y >= 0] (EXP2 (n, expn), MUL (x, expn, y))
 
+macrodef pf_shl_const x n =
+  `( ( ,(pf_exp2_const n), ,(pf_mul_const x) ) )
+
 prfun SHL_make {x, n: nat} (): [y: nat] SHL (x, n, y)
 
-fun ushl3
+// if n1 <= n2 then (x << n1) <= (x << n2)
+prfun shl_le
+  {x, n1, n2, y1, y2: nat | n1 <= n2}
+  (pf1: SHL (x, n1, y1), pf2: SHL (x, n2, y2)):
+  [y1 <= y2] void
+
+fun ushl
   {x, n: nat} {y: Uint}
   (pf: SHL (x, n, y) |
    x: uint x, n: int n):<>
@@ -224,9 +215,14 @@ fun shr_uint1_int1
   = "mac#atspre_shr"
 overload >> with shr_uint1_int1
 
-fun ushr2
-  {x: int} {xbits: int} {n: int | n <= xbits}
-  (pf: needbits(x,xbits) |
-   x: uint x, n: int n):<>
-  [r:Uint] (needbits(r,xbits-n) | uint r)
+// x >> n == x / 2**n == y
+propdef SHR (x: int, n: int, y: int) =
+  [expn: pos] [y >= 0] (EXP2 (n, expn), DIV (x, expn, y))
+
+prfun SHR_make {x, n: nat} (): [y: nat] SHR (x, n, y)
+
+fun ushr
+  {x, n: int}
+  (x: uint x, n: int n):<>
+  [y: nat] (SHR (x, n, y) | uint y)
   = "mac#atspre_shr"
