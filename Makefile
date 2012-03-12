@@ -77,7 +77,7 @@ prelude/SATS/integer.sats: gen_integer.lua
 
 .PHONY: depend
 
-depend:
+depend: prelude/SATS/integer.sats
 	$(ECHO) "    Analysing dependencies..."
 	$(ATSOPT) -dep1 -s $(sats_sources) -d $(dats_sources) \
 		| sed -r 's/^ *([^:]*)\.o *:/\1.c :/' > .depends.mak
