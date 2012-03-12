@@ -75,15 +75,6 @@ extern fun lidt {l: agz}
   (pf: !(@[interrupt_descriptor][256] @ l) |
    p: ptr l):<> void = "lidt"
 
-fn io_wait ():<> void =
-let
-  var i: Int
-in
-  for* {i: nat | i <= 16} .<16-i>. (i: int i)
-  => (i := 0; i < 16; i := i + 1)
-    outb (uint16_of 0x80u, uint8_of 0u)
-end
-
 fn w {x: Uint16} (x: int x):<> uint16 = uint16_of (uint1_of x)
 fn b {x: Uint8} (x: int x):<> uint8 = uint8_of (uint1_of x)
 

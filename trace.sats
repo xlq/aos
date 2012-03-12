@@ -7,11 +7,11 @@ fun init_serial
   {com_number: int | com_number >= 1 && com_number <= 4}
   {baud: Uint | baud > 0}
   (com_number: int com_number,
-   baud: uint baud):<!ref> void
+   baud: uint baud):<!ref,!ntm> void
 
 fun init_vga ():<!ref> void
 
-fun trace (msg: string):<!ntm,!ref> void
+fun trace (msg: !string):<!ntm,!ref> void
 
 fun trace_loc_msg
   (loc: string, msg: string):<!ntm,!ref> void
@@ -34,3 +34,5 @@ macdef panicloc (msg) = panic_loc_msg (#LOCATION, ,(msg))
     }
   }
 %}
+
+fun dump_uint (x: uint): void

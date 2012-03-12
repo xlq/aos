@@ -13,7 +13,7 @@ fun init
   {baud: Uint | baud > 0}
   (port: &serial_port? >> opt(serial_port, success),
    com_number: int com_number,
-   baud: uint baud):<> #[success: bool] bool success
+   baud: uint baud):<!ntm> #[success: bool] bool success
 
 fun send_char
   (port: &serial_port,

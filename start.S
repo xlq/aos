@@ -16,8 +16,11 @@ mb_header:
 .section startup, "ax"
 
 _start:
+    movl %eax,%edx /* magic */
+
     cli
     cld
+
     movb $0x80,%al
     outb %al,$0x70  /* disable NMI */
 
@@ -29,8 +32,8 @@ _start:
     popf
 
     /* Push multiboot start-up parameters from bootloader. */
-    pushl %eax /* magic */
     pushl %ebx /* mb_info */
+    pushl %edx /* magic */
 
     call _2boot_2edats__staload
     call _2boot_2edats__dynload

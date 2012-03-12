@@ -36,6 +36,10 @@ fn detect_uart (port: &serial_port):<> bool =
     end
   end
 
+fn wait_for_uart_ready (port: &serial_port):<!ntm> void =
+  while ((inb (uint16_of (port.port + 5u))
+    land uint8_of 0x20u) = uint8_of 0u) ()
+
 implement init (port, com_number, baud) =
 let
   val (portnum, irq) = case+ com_number of
@@ -80,8 +84,7 @@ implement send_char (port, ch) =
   let
     val ch' = sanitise_output (port, ch)
   in
-    (* Wait for UART to be ready. *)
-    while ((inb (uint16_of (port.port + 5u)) land uint8_of 0x20u) = uint8_of 0u) ();
+    wait_for_uart_ready (port);
     outb (uint16_of port.port, ubyte_of (ch')) (* send! *)
   end
 

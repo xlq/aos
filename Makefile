@@ -9,10 +9,10 @@ LDFLAGS ?= -m32 -nostdlib -Wl,--build-id=none
 V ?= 0 # Verbosity
 
 SOURCES = prelude/limits.sats \
-          portio.sats \
+          portio.sats portio.dats \
           boot.dats vga-text.sats vga-text.dats \
           enablable.sats enablable.dats \
-          bitflags.sats bitflags.dats \
+          bitflags.sats bitflags.dats multiboot.sats \
           serial.sats serial.dats trace.sats trace.dats \
           gdt.sats gdt.dats interrupts.sats interrupts.dats
 

@@ -107,3 +107,33 @@ in
   end;
   halt_completely ()
 end
+
+implement dump_uint (x) =
+let prval vbox pfcom1 = pfcom1 in
+  let var i: Int in
+    for* {i: Int | i <= 28} (i: int i) =>
+    (i := 28; i >= 0; i := i - 4) begin
+      let
+        val mask = 0xF0000000u >> (28-i)
+        val masked = uint1_of x land mask
+        val digit = masked >> i
+        val s: string = "0123456789ABCDEF"
+      in
+        if digit < 16u then
+          if com1.enabled then
+            let
+              prval () = opt_unsome com1.obj
+              val () = send_char (com1.obj, s[int1_of digit])
+              prval () = opt_some com1.obj
+            in end
+        else
+          if com1.enabled then
+            let
+              prval () = opt_unsome com1.obj
+              val () = send_char (com1.obj, '?')
+              prval () = opt_some com1.obj
+            in end
+      end
+    end
+  end
+end
