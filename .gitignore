@@ -5,3 +5,4 @@ kernel
 syms
 .*.swp
 .depends.mak
+prelude/SATS/integer.sats

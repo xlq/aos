@@ -23,7 +23,9 @@ function max(t)
     int = "INT_MAX",
     uint = "UINT_MAX",
     long = "LONG_MAX",
-    ulong = "ULONG_MAX"
+    ulong = "ULONG_MAX",
+    llong = "LLONG_MAX",
+    ullong = "ULLONG_MAX"
   })[t]
 end
 
@@ -36,7 +38,9 @@ function min(t)
     int = "INT_MIN",
     uint = "UINT_MIN",
     long = "LONG_MIN",
-    ulong = "ULONG_MIN"
+    ulong = "ULONG_MIN",
+    llong = "LLONG_MIN",
+    ullong = "ULLONG_MIN"
   })[t]
 end
 
@@ -45,12 +49,13 @@ function unsigned(t)
     ubyte = true,
     ushort = true,
     uint = true,
-    ulong = true
+    ulong = true,
+    ullong = true
   })[t]
 end
 
-types = {"byte", "short", "int", "long",
-         "ubyte", "ushort", "uint", "ulong"}
+types = {"byte", "short", "int", "long", "llong",
+         "ubyte", "ushort", "uint", "ulong", "ullong"}
 
 g [[
 // Generated from gen_integer.lua
