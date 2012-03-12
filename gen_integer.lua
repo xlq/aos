@@ -239,15 +239,20 @@ for _, t1 in ipairs(types) do
           g(" = \"mac#atspre_land\" ; ")
           g("overload land with land_%s\n", suffix)
 
-          g("fun lor_%s  ", suffix);
+          g("fun lor_%s ", suffix);
           g("(a: %s, b: %s):<> %s", t, t, t)
           g(" = \"mac#atspre_lor\" ; ")
           g("overload lor with lor_%s\n", suffix)
 
-          g("fun lnot_%s  ", t);
+          g("fun lnot_%s ", t);
           g("(a: %s):<> %s", t, t)
           g(" = \"mac#atspre_lnot\" ; ")
           g("overload ~ with lnot_%s\n", t)
+
+          g("fun shr_%s {n: nat} ", t);
+          g("(a: %s, n: int n):<> %s", t, t)
+          g(" = \"mac#atspre_shr\" ; ")
+          g("overload >> with shr_%s\n", t)
         end
       end
     end
