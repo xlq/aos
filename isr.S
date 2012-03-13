@@ -1,6 +1,3 @@
-.global isr0
-.global isr1
-
 /* Invoke interrupt handler.
    eax = interrupt vector */
 invoke_handler:
@@ -13,30 +10,22 @@ invoke_handler:
   addl $4,%esp  /* pop error code */
   iret
 
-/* WARNING: This code is carefully crafted so that
-   each ISR is exactly the same size!
-   Because one can't force a long displacement jump,
-   the jump target is loaded into a register first.
-   (Otherwise the first n isrs are shorter than
-   the others!) */
-
 #define EXC_HANDLER(n)                           \
-  nop  /* same size as pushl %eax */            ;\
+isr##n:                                         ;\
   pusha                                         ;\
   movl $n,%eax                                  ;\
   movl $invoke_handler,%edx                     ;\
   jmp *%edx
 
 #define INT_HANDLER(n)                           \
+isr##n:                                         ;\
   pushl %eax  /* dummy error code */            ;\
   pusha                                         ;\
   movl $n,%eax                                  ;\
   movl $invoke_handler,%edx                     ;\
   jmp *%edx
 
-isr0:
 EXC_HANDLER(0)
-isr1:
 EXC_HANDLER(1)
 EXC_HANDLER(2)
 EXC_HANDLER(3)
@@ -292,3 +281,270 @@ INT_HANDLER(252)
 INT_HANDLER(253)
 INT_HANDLER(254)
 INT_HANDLER(255)
+
+/*****************************************************************/
+
+/* Interrupt handler table.
+   At start-up, this contains the addresses of all the isr
+   functions. These are then replaced by interrupt handler
+   functions. */
+
+.data
+.global interrupt_handlers
+interrupt_handlers:
+  .int isr0
+  .int isr1
+  .int isr2
+  .int isr3
+  .int isr4
+  .int isr5
+  .int isr6
+  .int isr7
+  .int isr8
+  .int isr9
+  .int isr10
+  .int isr11
+  .int isr12
+  .int isr13
+  .int isr14
+  .int isr15
+  .int isr16
+  .int isr17
+  .int isr18
+  .int isr19
+  .int isr20
+  .int isr21
+  .int isr22
+  .int isr23
+  .int isr24
+  .int isr25
+  .int isr26
+  .int isr27
+  .int isr28
+  .int isr29
+  .int isr30
+  .int isr31
+  .int isr32
+  .int isr33
+  .int isr34
+  .int isr35
+  .int isr36
+  .int isr37
+  .int isr38
+  .int isr39
+  .int isr40
+  .int isr41
+  .int isr42
+  .int isr43
+  .int isr44
+  .int isr45
+  .int isr46
+  .int isr47
+  .int isr48
+  .int isr49
+  .int isr50
+  .int isr51
+  .int isr52
+  .int isr53
+  .int isr54
+  .int isr55
+  .int isr56
+  .int isr57
+  .int isr58
+  .int isr59
+  .int isr60
+  .int isr61
+  .int isr62
+  .int isr63
+  .int isr64
+  .int isr65
+  .int isr66
+  .int isr67
+  .int isr68
+  .int isr69
+  .int isr70
+  .int isr71
+  .int isr72
+  .int isr73
+  .int isr74
+  .int isr75
+  .int isr76
+  .int isr77
+  .int isr78
+  .int isr79
+  .int isr80
+  .int isr81
+  .int isr82
+  .int isr83
+  .int isr84
+  .int isr85
+  .int isr86
+  .int isr87
+  .int isr88
+  .int isr89
+  .int isr90
+  .int isr91
+  .int isr92
+  .int isr93
+  .int isr94
+  .int isr95
+  .int isr96
+  .int isr97
+  .int isr98
+  .int isr99
+  .int isr100
+  .int isr101
+  .int isr102
+  .int isr103
+  .int isr104
+  .int isr105
+  .int isr106
+  .int isr107
+  .int isr108
+  .int isr109
+  .int isr110
+  .int isr111
+  .int isr112
+  .int isr113
+  .int isr114
+  .int isr115
+  .int isr116
+  .int isr117
+  .int isr118
+  .int isr119
+  .int isr120
+  .int isr121
+  .int isr122
+  .int isr123
+  .int isr124
+  .int isr125
+  .int isr126
+  .int isr127
+  .int isr128
+  .int isr129
+  .int isr130
+  .int isr131
+  .int isr132
+  .int isr133
+  .int isr134
+  .int isr135
+  .int isr136
+  .int isr137
+  .int isr138
+  .int isr139
+  .int isr140
+  .int isr141
+  .int isr142
+  .int isr143
+  .int isr144
+  .int isr145
+  .int isr146
+  .int isr147
+  .int isr148
+  .int isr149
+  .int isr150
+  .int isr151
+  .int isr152
+  .int isr153
+  .int isr154
+  .int isr155
+  .int isr156
+  .int isr157
+  .int isr158
+  .int isr159
+  .int isr160
+  .int isr161
+  .int isr162
+  .int isr163
+  .int isr164
+  .int isr165
+  .int isr166
+  .int isr167
+  .int isr168
+  .int isr169
+  .int isr170
+  .int isr171
+  .int isr172
+  .int isr173
+  .int isr174
+  .int isr175
+  .int isr176
+  .int isr177
+  .int isr178
+  .int isr179
+  .int isr180
+  .int isr181
+  .int isr182
+  .int isr183
+  .int isr184
+  .int isr185
+  .int isr186
+  .int isr187
+  .int isr188
+  .int isr189
+  .int isr190
+  .int isr191
+  .int isr192
+  .int isr193
+  .int isr194
+  .int isr195
+  .int isr196
+  .int isr197
+  .int isr198
+  .int isr199
+  .int isr200
+  .int isr201
+  .int isr202
+  .int isr203
+  .int isr204
+  .int isr205
+  .int isr206
+  .int isr207
+  .int isr208
+  .int isr209
+  .int isr210
+  .int isr211
+  .int isr212
+  .int isr213
+  .int isr214
+  .int isr215
+  .int isr216
+  .int isr217
+  .int isr218
+  .int isr219
+  .int isr220
+  .int isr221
+  .int isr222
+  .int isr223
+  .int isr224
+  .int isr225
+  .int isr226
+  .int isr227
+  .int isr228
+  .int isr229
+  .int isr230
+  .int isr231
+  .int isr232
+  .int isr233
+  .int isr234
+  .int isr235
+  .int isr236
+  .int isr237
+  .int isr238
+  .int isr239
+  .int isr240
+  .int isr241
+  .int isr242
+  .int isr243
+  .int isr244
+  .int isr245
+  .int isr246
+  .int isr247
+  .int isr248
+  .int isr249
+  .int isr250
+  .int isr251
+  .int isr252
+  .int isr253
+  .int isr254
+  .int isr255

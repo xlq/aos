@@ -25,7 +25,7 @@ staload "trace.sats"
 typedef interrupt_descriptor = @( uint16, uint16, uint16, uint16 )
 
 %{^
-  void(*interrupt_handlers[256])();
+  extern void (*interrupt_handlers[])();
   struct { uint16_t a,b,c,d; } the_idt[256];
 %}
 
@@ -47,13 +47,6 @@ begin
 end
 
 %{^
-  /* isr0 and isr1 point to code defined in isr.S. */
-  extern char isr0[], isr1[];
-
-  /* The interrupt service routines are evenly spaced.
-     This macro obtains the address of the nth. */
-  #define nth_isr(n) ((uintptr_t) (isr0 + (isr1 - isr0) * (n)))
-
   static void lidt (void *idt)
   {
     __asm__ volatile (
@@ -67,9 +60,6 @@ end
     );
   }
 %}
-
-extern fun nth_isr {n: nat | n < 256}
-  (n: int n):<> [x: Uintptr] uintptr_t x = "mac#nth_isr"
 
 extern fun lidt {l: agz}
   (pf: !(@[interrupt_descriptor][256] @ l) |
@@ -97,20 +87,31 @@ end
 
 implement init () =
 begin
-  (* Fill in the IDT and handler table. *)
+  // Fill in the IDT and handler table.
   let var i: Int in
     for* {i: nat | i <= 256} .<256-i>. (i: int i)
     => (i := 0; i < 256; i := i + 1)
     begin
-      let prval vbox pf_the_idt = pf_the_idt in
+      let
+        // Get isr address from interrupt handler table.
+        val isr_address = uintptr_of_handler (
+          let prval vbox pf_interrupt_handlers = pf_interrupt_handlers in
+            interrupt_handlers->[i]
+          end) where {
+            extern castfn uintptr_of_handler (x: interrupt_handler):<> [x: Uintptr] uintptr_t x
+          }
+        prval vbox pf_the_idt = pf_the_idt
+      in
+        // Create IDT entry.
         the_idt->[i] := @(
-          uint16_of (uint1_of ((nth_isr i) land uintptr1_of 0xFFFFu)),
+          uint16_of (uint1_of (isr_address land uintptr1_of 0xFFFFu)),
           w $GDT.SEG_DPL0_CODE,
           w 0x8E00,
-          uint16_of (uint1_of (((nth_isr i) >> 16) land uintptr1_of 0xFFFFu))
+          uint16_of (uint1_of ((isr_address >> 16) land uintptr1_of 0xFFFFu))
         );
       end;
       let prval vbox pf_interrupt_handlers = pf_interrupt_handlers in
+        // Set interrupt handler table entry to the default interrupt handler.
         interrupt_handlers->[i] := default_interrupt_handler
       end
     end
@@ -121,7 +122,7 @@ begin
   end;
   trace "PIC ";
   remap_pics ();
-  (* Enable the cascade IRQ so that the slave PIC can work. *)
+  // Enable the cascade IRQ so that the slave PIC can work.
   unmask_irq 2
 end
 
