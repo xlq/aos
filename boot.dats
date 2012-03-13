@@ -21,11 +21,6 @@ extern fun ats_entry_point
    magic: uint32, mb_info: ptr l): void
   = "ats_entry_point"
 
-fn pause (): void =
-let var i: Int in
-  for (i := 0; i < 10000; i := i + 1) io_wait ();
-end
-
 implement ats_entry_point (pf_mb_info | magic, mb_info) =
 let
   var i: [i: Int] int i
@@ -38,23 +33,15 @@ in
   for (i := 0; i < 1000; i := i + 1) io_wait ();
   init_serial (1, 115200u);
   // init_vga ();
-  pause ();
   trace "Hello, world!\n";
-  pause ();
   trace "mb size: 0x";
   dump_uint (uint_of_size1 sizeof<mb_info>);
   trace "\nBoot magic: 0x";
-  pause ();
   dump_uint magic;
-  pause ();
   trace "\nmb_info is at 0x";
-  pause ();
   dump_uint (uint_of_ptr1 mb_info);
-  pause ();
   trace "\nBoot loader flags are 0x";
-  pause ();
   dump_uint mb_info->flags;
-  pause ();
   trace "\nmem_lower: 0x";
   dump_uint mb_info->mem_lower;
   trace "\nmem_upper: 0x";
@@ -62,19 +49,15 @@ in
   trace "\ncmd_line: 0x";
   dump_uint mb_info->cmd_line;
   trace " ";
-  pause ();
   trace (string_of_uint (mb_info->cmd_line));
   trace "\n";
-  pause ();
   if test_bit (mb_info->flags, MBI_BOOT_LOADER_NAME) then
     let
       prval () = opt_unsome mb_info->boot_loader_name
       val () = trace "Boot loader name is at 0x"
       val () = dump_uint (uint_of_type (mb_info->boot_loader_name));
       val () = trace "\nBoot loader name: "
-      val () = pause ()
       val () = trace mb_info->boot_loader_name
-      val () = pause ()
       val () = trace "\n";
       prval () = opt_some mb_info->boot_loader_name
     in end;

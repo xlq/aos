@@ -219,6 +219,10 @@ stadef <> = neq_addr_addr_bool
 
 stadef null = null_addr
 
+(* Quantified types. *)
+
+typedef Ptr = [l: addr] ptr l
+
 (* ****** ****** *)
 
 // abst@ype uint8 = $extype "uint8_t"
