@@ -16,16 +16,33 @@ mb_header:
 .section startup, "ax"
 
 _start:
+    /* Entry point from boot loader.
+       eax contains magic number 0x2BADB002.
+       ebx contains a pointer to mb_info. */
     movl %eax,%edx /* magic */
 
+    /* Disable interrupts. */
     cli
     cld
 
+    /* Disable NMI. */
     movb $0x80,%al
-    outb %al,$0x70  /* disable NMI */
+    outb %al,$0x70
 
-    /* Set up initial stack. */
-    movl $(stack + STACK_SIZE),%esp
+    /* Zero out bss section, in case boot loader didn't.
+       (ebx, edx are still live here) */
+    movl $_bss_start,%edi
+    movl $_bss_end,%ecx
+    subl %edi,%ecx
+    xorl %eax,%eax
+    rep stosb
+
+    /* Set up initial stack.
+       The "stack" symbol points to a virtual address.
+       Convert this to a physical address. */
+    movl $stack_bottom,%esp
+    subl $_virt_base,%esp
+    addl $_phys_base,%esp
 
     /* Clear flags. */
     pushl $0
@@ -35,16 +52,47 @@ _start:
     pushl %ebx /* mb_info */
     pushl %edx /* magic */
 
+    /* Create initial page tables.
+       0x00000000 .. 0x003FFFFF is mapped to 0x00000000
+       0xC0000000 .. 0xC03FFFFF is mapped to 0x00000000 */
+    movl $boot_page_table,%edi
+    movl $0x00000003,%eax
+    movl $1024,%ecx
+1:  stosl
+    addl $0x00001000,%eax
+    decl %ecx
+    jnz 1b
+
+    /* Set page directory entries. */
+    movl $boot_page_table,%eax
+    orl $0x00000003,%eax
+    movl %eax,(boot_page_directory + 0x000)
+    movl %eax,(boot_page_directory + 0xC00)
+
+    /* Load page directory. */
+    movl $boot_page_directory,%eax
+    movl %eax,%cr3
+
+    /* Enable paging. */
+    movl %cr0,%eax
+    bts $31,%eax
+    movl %eax,%cr0
+
+    /* Call dynamic elaboration code. */
     call _2boot_2edats__staload
     call _2boot_2edats__dynload
-    call ats_entry_point
 
-    /* fall through */
+    /* Call entry point in boot.dats. */
+    pushl $hang
+    jmp ats_entry_point
+
+.text
 hang:
     cli
     hlt
     jmp hang
 
+.data
 .global _2boot_2edats__dynload_flag
 _2boot_2edats__dynload_flag:
     .int 0
