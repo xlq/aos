@@ -1,0 +1,287 @@
+diff --git a/src/ats_solver_fm.cats b/src/ats_solver_fm.cats
+index b1f71bb..d264314 100644
+--- a/src/ats_solver_fm.cats
++++ b/src/ats_solver_fm.cats
+@@ -48,16 +48,26 @@
+ 
+ /* ****** ****** */
+ 
++typedef ats_mpz_ptr_type i0nt;
++
++/* ****** ****** */
++
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_i0nt_of_int
+-  (ats_int_type i) { return (i) ; }
++  (ats_int_type i)
++{
++  ats_ptr_type p = atspre_ptr_alloc_tsz (sizeof (ats_mpz_viewt0ype));
++  atslib_mpz_init_set_int (p, i);
++  return p;
++}
+ // end of [atsopt_solver_fm_i0nt_of_int]
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_i0nt_of_intinf
+-  (ats_mpz_ptr_type i) { return atsopt_get_int (i) ; }
++  (ats_mpz_ptr_type i)
++{ return i ; }
+ // end of [atsopt_solver_fm_i0nt_of_intinf]
+ 
+ /* ****** ****** */
+@@ -65,48 +75,48 @@ atsopt_solver_fm_i0nt_of_intinf
+ ATSinline()
+ ats_bool_type
+ atsopt_solver_fm_gt_i0nt_int
+-  (ats_int_type i0, ats_int_type i) {
+-  return (i0 > i ? ats_true_bool : ats_false_bool) ;
++  (i0nt i0, ats_int_type i) {
++  return atsopt_gt_intinf_int (i0, i) ;
+ } // end of [atsopt_solver_fm_gt_i0nt_int]
+ 
+ ATSinline()
+ ats_bool_type
+ atsopt_solver_fm_gte_i0nt_int (
+-  ats_int_type i0, ats_int_type i
++  i0nt i0, ats_int_type i
+ ) {
+-  return (i0 >= i ? ats_true_bool : ats_false_bool) ;
++  return atsopt_gte_intinf_int (i0, i) ;
+ } // end of [atsopt_solver_fm_gte_i0nt_int]
+ 
+ ATSinline()
+ ats_bool_type
+ atsopt_solver_fm_lt_i0nt_int (
+-  ats_int_type i0, ats_int_type i
++  i0nt i0, ats_int_type i
+ ) {
+-  return (i0 < i ? ats_true_bool : ats_false_bool) ;
++  return atsopt_lt_intinf_int (i0, i) ;
+ } // end of [atsopt_solver_fm_lt_i0nt_int]
+ 
+ ATSinline()
+ ats_bool_type
+ atsopt_solver_fm_lte_i0nt_int (
+-  ats_int_type i0, ats_int_type i
++  i0nt i0, ats_int_type i
+ ) {
+-  return (i0 <= i ? ats_true_bool : ats_false_bool) ;
++  return atsopt_lte_intinf_int (i0, i) ;
+ } // end of [atsopt_solver_fm_lte_i0nt_int]
+ 
+ ATSinline()
+ ats_bool_type
+ atsopt_solver_fm_eq_i0nt_int (
+-  ats_int_type i0, ats_int_type i
++  i0nt i0, ats_int_type i
+ ) {
+-  return (i0 == i ? ats_true_bool : ats_false_bool) ;
++  return atsopt_eq_intinf_int (i0, i) ;
+ } // end of [atsopt_solver_fm_eq_i0nt_int]
+ 
+ ATSinline()
+ ats_bool_type
+ atsopt_solver_fm_neq_i0nt_int (
+-  ats_int_type i0, ats_int_type i
++  i0nt i0, ats_int_type i
+ ) {
+-  return (i0 != i ? ats_true_bool : ats_false_bool) ;
++  return atsopt_neq_intinf_int (i0, i) ;
+ } // end of [atsopt_solver_fm_neq_i0nt_int]
+ 
+ //
+@@ -114,93 +124,114 @@ atsopt_solver_fm_neq_i0nt_int (
+ ATSinline()
+ ats_bool_type
+ atsopt_solver_fm_gt_i0nt_i0nt (
+-  ats_int_type i1, ats_int_type i2
++  i0nt i1, i0nt i2
+ ) {
+-  return (i1 > i2 ? ats_true_bool : ats_false_bool) ;
++  return atsopt_gt_intinf_intinf (i1, i2) ;
+ } // end of [atsopt_solver_fm_gt_i0nt_i0nt]
+ 
+ ATSinline()
+ ats_bool_type
+ atsopt_solver_fm_lt_i0nt_i0nt (
+-  ats_int_type i1, ats_int_type i2
++  i0nt i1, i0nt i2
+ ) {
+-  return (i1 < i2 ? ats_true_bool : ats_false_bool) ;
++  return atsopt_lt_intinf_intinf (i1, i2) ;
+ } // end of [atsopt_solver_fm_lt_i0nt_i0nt]
+ 
+ //
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_neg_i0nt
+-  (ats_int_type i) { return (-i) ; }
++  (i0nt i) { return atsopt_neg_intinf (i) ; }
+ // end of [atsopt_solver_fm_neg_i0nt]
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_add_i0nt_i0nt (
+-  ats_int_type i1, ats_int_type i2
++  i0nt i1, i0nt i2
+ ) {
+-  return (i1 + i2) ;
++  return atsopt_add_intinf_intinf (i1, i2) ;
+ } // end of [atsopt_solver_fm_add_i0nt_i0nt]
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_sub_i0nt_i0nt (
+-  ats_int_type i1, ats_int_type i2
++  i0nt i1, i0nt i2
+ ) {
+-  return (i1 - i2) ;
++  return atsopt_sub_intinf_intinf (i1, i2) ;
+ } // end of [atsopt_solver_fm_sub_i0nt_i0nt]
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_mul_i0nt_i0nt (
+-  ats_int_type i1, ats_int_type i2
++  i0nt i1, i0nt i2
+ ) {
+-  return (i1 * i2) ;
++  return atsopt_mul_intinf_intinf (i1, i2) ;
+ } // end of [atsopt_solver_fm_mul_i0nt_i0nt]
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_div_i0nt_i0nt (
+-  ats_int_type i1, ats_int_type i2
++  i0nt i1, i0nt i2
+ ) {
+-  return (i1 / i2) ;
++  mpz_ptr ans = ATS_MALLOC (sizeof(ats_mpz_viewt0ype)) ;
++  mpz_init (ans) ;
++  mpz_tdiv_q (ans, i1, i2) ;
++  return ans ;
+ } // end of [atsopt_solver_fm_div_i0nt_i0nt]
+ 
+ //
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_succ_i0nt
+-  (ats_int_type i) { return (i + 1) ; }
++  (i0nt i) {
++  mpz_ptr ans = ATS_MALLOC (sizeof(ats_mpz_viewt0ype)) ;
++  mpz_init (ans) ;
++  mpz_add_ui (ans, i, 1) ;
++  return ans ;
++}
+ // end of [atsopt_solver_fm_succ_i0nt]
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_pred_i0nt
+-  (ats_int_type i) { return (i - 1) ; }
++  (i0nt i) {
++  mpz_ptr ans = ATS_MALLOC (sizeof(ats_mpz_viewt0ype)) ;
++  mpz_init (ans) ;
++  mpz_sub_ui (ans, i, 1) ;
++  return ans ;
++}
+ // end of [atsopt_solver_fm_pred_i0nt]
+ 
+ //
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_mod_i0nt_i0nt
+-  (ats_int_type i1, ats_int_type i2) {
+-  return (i1 % i2) ;
++  (i0nt i1, i0nt i2) {
++  mpz_ptr ans = ATS_MALLOC (sizeof(ats_mpz_viewt0ype)) ;
++  mpz_init (ans);
++  mpz_tdiv_r (ans, i1, i2) ;
++  return ans ;
+ } // end of [atsopt_solver_fm_mod_i0nt_i0nt]
+ 
+ ATSinline()
+-ats_int_type
++i0nt
+ atsopt_solver_fm_gcd_i0nt_i0nt (
+-  ats_int_type i1, ats_int_type i2
++  i0nt i1, i0nt i2
+ ) {
+-  int tmp ;
+-  if (i1 < 0) i1 = -i1 ;
+-  if (i2 < 0) i2 = -i2 ;
+-
++  if (atsopt_lt_intinf_int (i1, 0)) {
++    i1 = atsopt_neg_intinf (i1) ;
++  }
++  if (atsopt_lt_intinf_int (i2, 0)) {
++    i2 = atsopt_neg_intinf (i2) ;
++  }
+   while (1) {
+-    if (i2 == 0) return i1; tmp = i1 % i2 ; i1 = i2 ; i2 = tmp ;
++    if (atsopt_eq_intinf_int (i2, 0)) return i1;
++    i0nt tmp = atsopt_solver_fm_mod_i0nt_i0nt (i1, i2) ;
++    i1 = i2;
++    i2 = tmp;
+   }
+   return 0 ; /* deadcode */
+ } // end of [atsopt_solver_fm_gcd_i0nt_i0nt]
+@@ -210,8 +241,8 @@ atsopt_solver_fm_gcd_i0nt_i0nt (
+ ATSinline()
+ ats_void_type
+ atsopt_solver_fm_fprint_i0nt
+-  (ats_ptr_type out, ats_int_type i) {
+-  fprintf ((FILE *)out, "%i", i) ; return ;
++  (ats_ptr_type out, i0nt i) {
++  atslib_fprint_mpz (out, i) ;
+ } // end of [atsopt_solver_fm_fprint_i0nt]
+ 
+ /* ****** ****** */
+@@ -234,10 +265,16 @@ ATSinline()
+ ats_ptr_type
+ atsopt_solver_fm_intvec_ptr_make
+   (ats_int_type n) {
+-  int *p ;
+-  int nbytes = n * sizeof(ats_int_type) ;
++  i0nt zero = ATS_MALLOC (sizeof(ats_mpz_viewt0ype)) ;
++  mpz_init_set_si (zero, 0) ;
++  i0nt *p ;
++  int i ;
++  int nbytes = n * sizeof(i0nt) ;
+   p = ATS_MALLOC (nbytes) ;
+-  return memset (p, 0, nbytes) ;
++  for (i=0; i<n; ++i) {
++    p[i] = zero ;
++  }
++  return p ;
+ } // end of [atsopt_solver_fm_intvec_ptr_make]
+ 
+ /* ****** ****** */
+diff --git a/src/ats_solver_fm.sats b/src/ats_solver_fm.sats
+index 7b76040..62ffd7e 100644
+--- a/src/ats_solver_fm.sats
++++ b/src/ats_solver_fm.sats
+@@ -46,7 +46,7 @@ staload IntInf = "ats_intinf.sats"
+ 
+ (* ****** ****** *)
+ 
+-abst@ype i0nt = int
++abstype i0nt
+ 
+ val i0nt_0 : i0nt
+ val i0nt_1 : i0nt

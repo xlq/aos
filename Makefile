@@ -1,6 +1,6 @@
-ATSHOME ?= $(PWD)
+ATSHOME := $(PWD)
 ATSHOMERELOC ?= 
-ATSOPT ?= ATSHOME=$(ATSHOME) ATSHOMERELOC=$(ATSHOMERELOC) $(ATSHOME)/bin/atsopt
+ATSOPT ?= ATSHOME=$(ATSHOME) ATSHOMERELOC=$(ATSHOMERELOC) compiler/bin/atsopt
 CC ?= gcc
 CFLAGS ?= -std=c99 -Wall -Wextra -Wno-unused -march=i386 \
           -Os -m32 -nostdlib -fno-stack-protector \
@@ -43,7 +43,7 @@ prelude_sources := $(wildcard prelude/SATS/*.sats) prelude/SATS/integer.sats
 
 clean_files := test $(objects) $(objects:.o=.c)
 
-.PHONY: all always
+.PHONY: all always compiler
 
 all: kernel syms
 
@@ -90,3 +90,11 @@ clean:
 	$(RM) $(clean_files)
 
 -include .depends.mak
+
+# Check out and build a patched version of the ATS compiler.
+compiler:
+	[ -e "compiler/" ] || { svn checkout "https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/trunk" "compiler" && patch --directory="compiler/" -Np1 <"ats-anairiats-bignums.patch" ; }
+	[ -e "compiler/bootstrap0" ] || svn checkout "https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/bootstrap/anairiats" "compiler/bootstrap0"
+	[ -e "compiler/configure" ] || { cd "compiler/" && { aclocal ; automake --add-missing ; autoconf ; } ; }
+	[ -e "compiler/config.h" ] || { cd "compiler/" && ./configure ; }
+	[ -e "compiler/bin/atsopt" ] || { cd "compiler/" && $(MAKE) all ; }
