@@ -78,6 +78,10 @@ _start:
     bts $31,%eax
     movl %eax,%cr0
 
+    /* Move stack pointer to virtual address. */
+    subl $_phys_base,%esp
+    addl $_virt_base,%esp
+
     /* Call dynamic elaboration code. */
     call _2boot_2edats__staload
     call _2boot_2edats__dynload
