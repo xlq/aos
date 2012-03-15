@@ -14,6 +14,7 @@ dynload "trace.dats"
 dynload "enablable.dats"
 dynload "gdt.dats"
 dynload "interrupts.dats"
+dynload "bounded_strings.dats"
 
 extern fun ats_entry_point
   {l: agz}

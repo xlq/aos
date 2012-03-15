@@ -12,6 +12,7 @@ SOURCES = prelude/limits.sats \
           portio.sats portio.dats \
           boot.dats vga-text.sats vga-text.dats \
           enablable.sats enablable.dats \
+          bounded_strings.sats bounded_strings.dats \
           bitflags.sats bitflags.dats multiboot.sats \
           serial.sats serial.dats trace.sats trace.dats \
           gdt.sats gdt.dats interrupts.sats interrupts.dats
