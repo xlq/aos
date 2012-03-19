@@ -28,6 +28,7 @@ praxi opt_none {vt:viewt@ype} (x: !vt? >> opt(vt,false)):<> void
 praxi opt_unsome {vt:viewt@ype} (x: !opt(vt,true) >> vt):<> void
 praxi opt_unnone {vt:viewt@ype} (x: !opt(vt,false) >> vt?):<> void
 
+// Only for globals.
 fun vbox_make_view_ptr
   {vt:viewt@ype} {l:addr}
   (pf: vt @ l | p: ptr l): (vbox (vt @ l) | void)

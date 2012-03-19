@@ -8,10 +8,11 @@ CFLAGS ?= -std=c99 -Wall -Wextra -Wno-unused -march=i386 \
 LDFLAGS ?= -m32 -nostdlib -Wl,--build-id=none
 V ?= 0 # Verbosity
 
-SOURCES = prelude/limits.sats \
+SOURCES = prelude/limits.sats prelude/DATS/array.dats \
           portio.sats portio.dats \
           boot.dats vga-text.sats vga-text.dats \
           enablable.sats enablable.dats \
+          streams.sats streams.dats \
           bounded_strings.sats bounded_strings.dats \
           bitflags.sats bitflags.dats multiboot.sats \
           serial.sats serial.dats trace.sats trace.dats \

@@ -4,8 +4,11 @@ staload GDT = "gdt.sats"
 staload INT = "interrupts.sats"
 staload "bitflags.sats"
 staload "multiboot.sats"
+staload BS = "bounded_strings.sats"
+staload "streams.sats"
 dynload "prelude/DATS/integer.dats"
 dynload "prelude/DATS/arith.dats"
+dynload "prelude/DATS/array.dats"
 dynload "bitflags.dats"
 dynload "vga-text.dats"
 dynload "portio.dats"
@@ -15,12 +18,23 @@ dynload "enablable.dats"
 dynload "gdt.dats"
 dynload "interrupts.dats"
 dynload "bounded_strings.dats"
+dynload "streams.dats"
 
 extern fun ats_entry_point
   {l: agz}
   (pf_mb_info: !(mb_info @ l) |
    magic: uint32, mb_info: ptr l): void
   = "ats_entry_point"
+
+fn play_with_strings (): void =
+let
+  var !s_buf with pf_s_buf = @[char][256] ('\0')
+  var s = $BS.create (pf_s_buf | s_buf, 256)
+  var c = $BS.stream (view@ s | &s)
+  val () = put (HEX | c, 123)
+  prval () = view@ s := $BS.unstream c
+  val () = pf_s_buf := ($BS.destroy s).0
+in () end
 
 implement ats_entry_point (pf_mb_info | magic, mb_info) =
 let
@@ -35,6 +49,7 @@ in
   init_serial (1, 115200u);
   // init_vga ();
   trace "Hello, world!\n";
+  play_with_strings ();
   trace "mb size: 0x";
   dump_uint (uint_of_size1 sizeof<mb_info>);
   trace "\nBoot magic: 0x";

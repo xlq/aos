@@ -74,7 +74,7 @@ abst@ype size_int_t0ype (int) = size_t0ype
 abst@ype ssize_int_t0ype (int) = ssize_t0ype
 abst@ype intptr_int_t0ype (int) = intptr_t0ype
 abst@ype uintptr_int_t0ype (int) = uintptr_t0ype
-abst@ype ptr_addr_type (addr) = ptr_type
+abstype ptr_addr_type (addr) = ptr_type
 
 abstype string_type
 abstype string_int_type (int)
