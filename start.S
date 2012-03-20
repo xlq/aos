@@ -53,8 +53,7 @@ _start:
     pushl %edx /* magic */
 
     /* Create initial page tables.
-       0x00000000 .. 0x003FFFFF is mapped to 0x00000000
-       0xC0000000 .. 0xC03FFFFF is mapped to 0x00000000 */
+       0x00000000 .. 0x003FFFFF is mapped to 0x00000000 */
     movl $boot_page_table,%edi
     movl $0x00000003,%eax
     movl $1024,%ecx
@@ -67,7 +66,6 @@ _start:
     movl $boot_page_table,%eax
     orl $0x00000003,%eax
     movl %eax,(boot_page_directory + 0x000)
-    movl %eax,(boot_page_directory + 0xC00)
 
     /* Load page directory. */
     movl $boot_page_directory,%eax

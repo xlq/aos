@@ -8,7 +8,7 @@ _phys_base = 0x00100000 ;
 /* Virtual base address of kernel.
    This is the address the kernel will run at,
    after paging is enabled in start.S. */
-_virt_base = 0xC0100000 ;
+_virt_base = 0x00100000 ;
 
 PHDRS {
     physical PT_LOAD FLAGS(7) ;
