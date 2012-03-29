@@ -1,0 +1,7 @@
+*_dats.c
+*_sats.c
+*.o
+kernel
+syms
+.*.swp
+.depends.mak
