@@ -8,11 +8,6 @@ implement ats_entry_point () =
     var ttyS1 = $Serial.new
   in
     if $Serial.init (ttyS1, 1, 115200) then begin
-      $Serial.send_char (ttyS1, 'H');
-      $Serial.send_char (ttyS1, 'e');
-      $Serial.send_char (ttyS1, 'l');
-      $Serial.send_char (ttyS1, 'l');
-      $Serial.send_char (ttyS1, 'o');
-      $Serial.send_char (ttyS1, '\n')
+      $Serial.send_string (ttyS1, 14, "Hello, world!\n")
     end
   end

@@ -28,3 +28,9 @@ fun is_initialised
 fun send_char
   (port: &serial_port true,
    ch: char): void
+
+fun send_string
+  {len: nat}
+  (port: &serial_port true,
+   len: size_t len,
+   str: string len): void

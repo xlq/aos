@@ -24,6 +24,9 @@ val COM4_BASE = uint16_of 0x2E8
 
 fn hang (): void = while (true) ()
 
+fn fofofofo (port: &serial_port false): bool =
+  (inb (port.port + 6) land 0xF0) > 0
+
 (* Is a UART present? *)
 fn detect_uart (port: &serial_port false): bool =
   let
@@ -62,7 +65,7 @@ implement init (port, com_number, baud) =
       else begin
         outb (port.port + 1, uint8_of 0x00); // disable all interrupts
         outb (port.port + 3, uint8_of 0x80); // enable 'DLAB' - baud rate divisor
-        outb (port.port + 0, (uint8_of 0xFF) land uint16_of divisor); // divisor (lower)
+        outb (port.port + 0, uint8_of (uint16_of divisor land 0xFF)); // divisor (lower)
         outb (port.port + 1, (uint8_of 0xFF) land (divisor / 0x100)); // divisor (upper)
         outb (port.port + 3, uint8_of 0x03); // 8 bits, no parity, one stop bit
         outb (port.port + 2, uint8_of 0xC7); // enable FIFO, clear them, with 14 byte threshold
@@ -93,3 +96,19 @@ implement send_char (port, ch) =
       outb (port.port, uint8_of (ch'')) (* send! *)
     end
   end
+
+implement send_string (port, len, str) = let
+  fun loop {i, len: nat | i <= len} .<len-i>.
+    (port: &serial_port true,
+     len: size_t len,
+     i: size_t i,
+     str: string len
+    ): void
+  =
+    if i < len then begin
+      send_char (port, str[i]);
+      loop (port, len, i+1, str)
+    end
+in
+  loop (port, len, 0, str)
+end
