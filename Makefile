@@ -1,11 +1,12 @@
-ATSCC ?= atscc
+ATSHOME ?= $(PWD)
+ATSHOMERELOC ?= ATS-0.2.6
+ATSCC ?= ATSHOME=$(ATSHOME) ATSHOMERELOC=$(ATSHOMERELOC) $(ATSHOME)/bin/atscc
 ATSOPT ?= atsopt
 CC ?= gcc
-ATSFLAGS ?= -m32 -nostdlib -fno-stack-protector -ffunction-sections -fdata-sections -g
+ATSFLAGS ?= -Os -m32 -nostdlib -fno-stack-protector -ffunction-sections -fdata-sections -fomit-frame-pointer -g
 LDFLAGS ?= -m32 -nostdlib -Wl,--gc-sections,--build-id=none
 
-SOURCES = integers.sats boot.dats \
-          serial.sats serial.dats
+SOURCES = boot.dats
 
 as_sources := start.S
 sats_sources := $(filter %.sats,$(SOURCES))

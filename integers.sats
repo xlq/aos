@@ -1,6 +1,50 @@
-stadef UINT8_LIM  = 0x100
-stadef UINT16_LIM = 0x10000
-stadef UINT32_LIM = 0x100000000
+
+(* I seem to be missing option_p so I define it here. *)
+
+dataprop option_p (P: prop+, bool) =
+  | Some_p (P, true) of P
+  | None_p (P, false) of ()
+
+%{#
+
+#ifndef INTEGERS_H
+#define INTEGERS_H
+  #define atspre_addmac(a,b) ((a)+(b))
+  #define atspre_submac(a,b) ((a)-(b))
+  #define atspre_shrmac(a,b) ((a)>>(b))
+  #define atspre_eqmac(a,b) ((a)==(b))
+  #define atspre_nemac(a,b) ((a)!=(b))
+  #define atspre_ltmac(a,b) ((a)<(b))
+  #define atspre_gtmac(a,b) ((a)>(b))
+  #define atspre_lemac(a,b) ((a)<=(b))
+  #define atspre_gemac(a,b) ((a)>=(b))
+  #define atspre_landmac(a,b) ((a)&(b))
+  #define atspre_lormac(a,b) ((a)|(b))
+  #define atspre_mulmac(a,b) ((a)*(b))
+  #define atspre_divmac(a,b) ((a)/(b))
+
+  typedef struct {
+    ats_bool_type overflow;
+    uint32_t result;
+  } mul_uint32_result;
+
+  static inline mul_uint32_result
+  integers_mul_uint32(uint32_t a, uint32_t b)
+  {
+    uint64_t c = a;
+    mul_uint32_result r;
+    c *= b;
+    r.overflow = (c > 0xFFFFFFFF);
+    r.result = c;
+    return r;
+  }
+#endif
+
+%}
+
+#define UINT8_LIM 0x100
+#define UINT16_LIM 0x10000
+#define UINT32_LIM 0x100000000
 abst@ype uint8 (x: int) = uint8
 abst@ype uint16 (x: int) = uint16
 abst@ype uint32 (x: int) = uint32
@@ -89,6 +133,17 @@ fun le_uint32_uint32 {a, b: uint32} (a: uint32 a, b: uint32 b):<> bool (a <= b) 
 fun ge_uint32_uint32 {a, b: uint32} (a: uint32 a, b: uint32 b):<> bool (a >= b) = "mac#atspre_gemac"
 fun land_uint32_uint32 {a, b: uint32} (a: uint32 a, b: uint32 b):<> [r: uint32 | r <= a && r <= b] uint32 r = "mac#atspre_landmac"
 fun lor_uint32_uint32 {a, b: uint32} (a: uint32 a, b: uint32 b):<> [r: uint32 | r >= a && r >= b] uint32 r = "mac#atspre_lormac"
+typedef mul_uint32_result (overflow: bool, result: int) = $extype_struct "mul_uint32_result" of { overflow = bool overflow, result = uint32 result }
+fun mul_uint32_uint32 {a, b: uint32} (a: uint32 a, b: uint32 b):<> [overflow: bool] [result: uint32] (option_p (MUL(a,b,result), ~overflow) | mul_uint32_result (overflow, result)) = "mac#integers_mul_uint32"
+
+(*
+fun div_uint32_uint32 {a, b: uint32 | b > 0} (a: uint32 a, b: uint32 b):<> uint32 (a / b) = "mac@atspre_divmac"
+dataprop mul_uint32_will_fit (int, int) =
+  | {a, b: uint32 | b > 0} {divr: nat | divr < a} mul_uint32_div (a, b) of (DIV (UINT32_LIM, b, divr))
+  | {a: uint32} mul_uint32_0 (a, 0) of ()
+fun test_mul_uint32_will_fit {a, b: uint32} (a: uint32 a, b: uint32 b):<> [r: bool] (option_p (mul_uint32_will_fit (a, b), r) | bool r)
+fun mul_uint32_uint32 {a, b: uint32} (pf: mul_uint32_will_fit (a, b) | a: uint32 a, b: uint32 b): uint32 (a * b) = "mac#atspre_mulmac"
+*)
 
 fun add_uint8_int {a, b: uint8 | a + b < UINT8_LIM} (a: uint8 a, b: int b):<> uint8 (a + b) = "mac#atspre_addmac"
 fun sub_uint8_int {a, b: uint8 | a >= b} (a: uint8 a, b: int b):<> uint8 (a - b) = "mac#atspre_submac"
@@ -158,6 +213,8 @@ overload <= with le_uint32_uint32
 overload >= with ge_uint32_uint32
 overload land with land_uint32_uint32
 overload lor with lor_uint32_uint32
+overload * with mul_uint32_uint32
+overload / with div_uint32_uint32
 
 overload + with add_uint8_int
 overload - with sub_uint8_int
@@ -192,16 +249,11 @@ overload >= with ge_uint32_int
 overload land with land_uint32_int
 overload lor with lor_uint32_int
 
-%{#
-  #define atspre_addmac(a,b) ((a)+(b))
-  #define atspre_submac(a,b) ((a)-(b))
-  #define atspre_shrmac(a,b) ((a)>>(b))
-  #define atspre_eqmac(a,b) ((a)==(b))
-  #define atspre_nemac(a,b) ((a)!=(b))
-  #define atspre_ltmac(a,b) ((a)<(b))
-  #define atspre_gtmac(a,b) ((a)>(b))
-  #define atspre_lemac(a,b) ((a)<=(b))
-  #define atspre_gemac(a,b) ((a)>=(b))
-  #define atspre_landmac(a,b) ((a)&(b))
-  #define atspre_lormac(a,b) ((a)|(b))
-%}
+sortdef uintn = uint32
+typedef uintn (x: int) = uint32 x
+typedef uintn = [x: uint32] uintn x
+symintr uintn_of
+overload uintn_of with uint32_of_int
+overload uintn_of with uint32_of_uint
+overload uintn_of with uint32_of_uint8
+overload uintn_of with uint32_of_uint16
