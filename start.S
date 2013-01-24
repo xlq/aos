@@ -81,8 +81,8 @@ _start:
     addl $_virt_base,%esp
 
     /* Call dynamic elaboration code. */
-    call _2boot_2edats__staload
-    call _2boot_2edats__dynload
+    call ATS_2d0_2e2_2e9_2boot_2edats__staload
+    call ATS_2d0_2e2_2e9_2boot_2edats__dynload
 
     /* Call entry point in boot.dats. */
     pushl $hang
@@ -95,8 +95,8 @@ hang:
     jmp hang
 
 .data
-.global _2boot_2edats__dynload_flag
-_2boot_2edats__dynload_flag:
+.global ATS_2d0_2e2_2e9_2boot_2edats__dynload_flag
+ATS_2d0_2e2_2e9_2boot_2edats__dynload_flag:
     .int 0
 
 .bss
